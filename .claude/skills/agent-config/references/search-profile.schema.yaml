@@ -1,0 +1,98 @@
+# search-profile — schema dato-agnostico (D2: profilo unico con intenti annidati)
+#
+# Contratto: repo del sistema (file locale + git), cartella searches/.
+# NON un file unico: la ricerca è descritta da PIÙ file —
+#   searches/defaults.yaml            → i default ereditabili, condivisi tra intenti
+#   searches/<intent-id>.yaml         → un file per intento di ricerca
+# Consumato da: routine job-watch (itera sugli intenti `attivo`, ricerca +
+#   filtri), job-alert-config (1.2.1, deriva gli alert per intento).
+# Popolato da: agent-config (1.1) per il primo intento; job-search-profile (1.2)
+#   per le modifiche e per il ciclo di vita degli intenti successivi.
+#
+# Differenza con master-profile: master-profile descrive CHI è l'utente
+# (esperienza, skill, vincoli) — è il nucleo condiviso. Il search-profile
+# descrive COSA cercare (ruoli, location, filtri di scarto), declinato PER
+# INTENTO: un utente può avere più intenti paralleli (es. "data-engineering-eu"
+# e "management-italia") che condividono lo stesso master-profile ma cercano
+# cose diverse. Master e search restano artefatti separati perché uno alimenta
+# il fit-check e l'altro la query di ricerca.
+#
+# NOTA SUI CONSUMATORI: la routine e gli alert iterano SOLO sugli intenti con
+# `stato: attivo`. Gli intenti in `pausa` o `archiviato` restano nel repo (non
+# si cancellano) ma non producono ricerche né alert.
+
+
+# ============================================================================
+# (a) searches/defaults.yaml — default ereditabili, condivisi tra gli intenti
+# ============================================================================
+# Contiene i campi tipicamente STABILI tra un intento e l'altro. Un intento
+# eredita questi valori salvo che li ridichiari nel proprio blocco `override`.
+
+# --- struttura di searches/defaults.yaml ---
+
+esclusioni:
+  titoli_da_escludere: [string]      # es. "Head of", "Director", "VP", "C-level"
+  eccezione_se_ambiguo: boolean      # se true: segnala comunque invece di scartare
+  tipo_contratto_da_escludere: [string]  # es. "Internship", "Traineeship", "Stage"
+
+lingue_annuncio:
+  accettate: [string]                # lingue in cui l'annuncio può essere scritto
+  escluse_se_prevalenti: [string]     # lingue che scartano l'annuncio se prevalenti nel corpo
+  escluse_se_obbligatorie: [string]   # lingue che scartano l'annuncio se richieste come requisito, anche se il corpo è in lingua accettata
+  tollerate_se_facoltative: [string]  # lingue ok se indicate come "nice to have"
+
+parametri_esecuzione:
+  finestra_temporale_ore: number      # es. 48 — quanto recenti devono essere gli annunci
+  max_annunci_per_esecuzione: number  # es. 15 — cap per garantire completezza dei passi
+
+
+# ============================================================================
+# (b) searches/<intent-id>.yaml — un file per intento di ricerca
+# ============================================================================
+# Il nome del file è l'`id` dell'intento (vedi sotto). Contiene i campi
+# specifici dell'intento più, opzionale, un blocco `override` per divergere
+# dai defaults SOLO dove serve.
+
+# --- struttura di searches/<intent-id>.yaml ---
+
+id: string                           # slug STABILE (minuscolo, trattini), es. "data-engineering-eu".
+                                     #   È la chiave che viaggia in source-log (ricerca_id prefissato),
+                                     #   role-fit (meta.intento) e applications (intent_id). NON cambiarlo
+                                     #   dopo la creazione: coincide sempre col nome del file.
+nome: string                         # etichetta leggibile, es. "Data Engineering in Europa"
+stato: enum[attivo, pausa, archiviato]  # solo `attivo` genera ricerche e alert; gli altri restano congelati
+creato: string                       # YYYY-MM-DD
+
+ruoli_target:
+  - titolo_principale: string
+    sinonimi: [string]              # varianti di titolo da includere nella ricerca
+
+location_target:
+  - area: string                    # es. "Milano/Italia", "Amsterdam/Paesi Bassi"
+    accetta_remoto: boolean
+    accetta_ibrido: boolean
+    priorita: enum[alta, media, bassa]
+
+seniority:
+  livello: enum[junior, medio, senior, lead, non_applicabile]
+  anni_esperienza_min: number
+  anni_esperienza_max: number
+  note: string                      # es. "livello medio, non senior"
+
+settori:
+  target: [string]
+  esclusi: [string]
+
+fonti:
+  - nome: enum[indeed, linkedin_alert, indeed_alert]
+    attiva: boolean
+    note: string                     # es. per LinkedIn: che tipo di alert è configurato
+
+# override — opzionale. Ridichiara SOLO i campi di defaults.yaml che questo
+# intento vuole diverti. Assente o vuoto = eredita tutto dai defaults.
+# Ogni chiave qui ha la stessa struttura del campo omonimo in defaults.yaml e
+# lo SOSTITUISCE per questo intento (non si fa merge parziale dentro il campo).
+override:
+  esclusioni: {}            # come sopra, se questo intento esclude/include titoli diversi
+  lingue_annuncio: {}       # come sopra, se questo intento accetta lingue diverse
+  parametri_esecuzione: {}  # come sopra, se questo intento usa finestra/cap diversi

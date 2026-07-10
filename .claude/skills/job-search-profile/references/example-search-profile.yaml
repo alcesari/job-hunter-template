@@ -1,0 +1,98 @@
+# Istanza di ESEMPIO delle ricerche — prima istanza di test del progetto.
+# Mostra la struttura D2: un blocco `defaults.yaml` (condiviso) + un file per
+# intento `searches/<intent-id>.yaml`. Qui i due sono uniti in un solo file di
+# esempio, separati da un commento; nel repo reale sono due file distinti.
+# Schema canonico: .claude/skills/agent-config/references/search-profile.schema.yaml
+# NON copiare questi valori nel profilo di un altro utente: ogni valore viene
+# dall'intervista di onboarding di QUEL utente.
+
+
+# ============================================================================
+# searches/defaults.yaml — default ereditabili, condivisi tra gli intenti
+# ============================================================================
+
+esclusioni:
+  titoli_da_escludere: ["Head of", "Director", "VP", "C-level"]
+  eccezione_se_ambiguo: true          # annunci ambigui segnalati comunque, non scartati
+  tipo_contratto_da_escludere: [Internship, Traineeship, Stage]
+
+lingue_annuncio:
+  accettate: [italiano, inglese]
+  escluse_se_prevalenti: [olandese, spagnolo]
+  escluse_se_obbligatorie: [olandese, spagnolo]
+  tollerate_se_facoltative: [olandese, spagnolo]   # "nice to have" non scarta
+
+parametri_esecuzione:
+  finestra_temporale_ore: 48
+  max_annunci_per_esecuzione: 15
+
+
+# ============================================================================
+# searches/data-engineering-eu.yaml — un intento di ricerca
+# ============================================================================
+
+id: data-engineering-eu
+nome: "Data Engineering in Europa"
+stato: attivo
+creato: 2026-07-05
+
+ruoli_target:
+  - titolo_principale: Data Engineer
+    sinonimi: []
+  - titolo_principale: Analytics Engineer
+    sinonimi: []
+  - titolo_principale: BI Developer
+    sinonimi: [Business Intelligence Developer]
+  - titolo_principale: Data Analyst
+    sinonimi: []
+  - titolo_principale: IT Manager
+    sinonimi: []
+
+location_target:
+  - area: Milano/Italia
+    accetta_remoto: true
+    accetta_ibrido: true
+    priorita: alta
+  - area: Amsterdam/Paesi Bassi
+    accetta_remoto: true
+    accetta_ibrido: true
+    priorita: media
+  - area: Belgio
+    accetta_remoto: true
+    accetta_ibrido: true
+    priorita: media
+  - area: Spagna
+    accetta_remoto: true
+    accetta_ibrido: true
+    priorita: media
+  - area: Remote Europe
+    accetta_remoto: true
+    accetta_ibrido: false
+    priorita: media
+
+seniority:
+  livello: medio
+  anni_esperienza_min: 3
+  anni_esperienza_max: 6
+  note: "livello medio, non senior — ruoli individuali/tecnici"
+
+settori:
+  target: []
+  esclusi: []
+
+fonti:
+  - nome: indeed
+    attiva: true
+    note: "ricerca diretta via connettore"
+  - nome: linkedin_alert
+    attiva: true
+    note: "alert email letti via Gmail; alcuni formati non hanno descrizione"
+  - nome: indeed_alert
+    attiva: true
+    note: "alert email letti via Gmail"
+
+# override — assente: questo intento eredita tutti i defaults.
+# Se divergesse, ridichiarerebbe qui SOLO i campi diversi, es.:
+# override:
+#   parametri_esecuzione:
+#     finestra_temporale_ore: 24

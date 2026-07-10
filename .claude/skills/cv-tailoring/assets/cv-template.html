@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--
+  Template CV generico del sistema Job Hunter (cv-tailoring, modulo 2.2).
+  Placeholders {{...}} da sostituire con i dati del master-profile selezionati
+  per la JD. Le sezioni ripetibili sono marcate con commenti BEGIN/END: vanno
+  duplicate per ogni voce e rimosse se vuote (niente sezioni vuote nel PDF).
+  Stile volutamente sobrio e ATS-friendly: una colonna, niente grafica, testo
+  selezionabile.
+-->
+<html lang="{{lingua_cv}}">
+<head>
+<meta charset="utf-8">
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 10pt; line-height: 1.45; color: #1a1a1a; margin: 0;
+  }
+  h1 { font-size: 20pt; margin: 0 0 2pt 0; letter-spacing: .5pt; }
+  .headline { font-size: 11pt; color: #333; margin: 0 0 4pt 0; }
+  .contacts { font-size: 9pt; color: #444; margin-bottom: 10pt; }
+  .contacts span + span::before { content: "  ·  "; color: #999; }
+  h2 {
+    font-size: 10.5pt; text-transform: uppercase; letter-spacing: 1pt;
+    border-bottom: 1px solid #bbb; padding-bottom: 2pt; margin: 12pt 0 6pt 0;
+  }
+  .entry { margin-bottom: 8pt; page-break-inside: avoid; }
+  .entry-head { display: flex; justify-content: space-between; }
+  .entry-role { font-weight: bold; }
+  .entry-org { color: #333; }
+  .entry-period { color: #555; font-size: 9pt; white-space: nowrap; }
+  ul { margin: 3pt 0 0 0; padding-left: 14pt; }
+  li { margin-bottom: 2pt; }
+  .skills p, .langs p { margin: 2pt 0; }
+  .skills b, .langs b { font-weight: bold; }
+  .summary { margin: 0 0 4pt 0; }
+</style>
+</head>
+<body>
+
+  <h1>{{nome}}</h1>
+  <p class="headline">{{headline_posizionamento}}</p>
+  <p class="contacts">
+    <span>{{location}}</span><span>{{email}}</span><span>{{telefono}}</span><span>{{link_profilo}}</span>
+  </p>
+
+  <h2>{{label_profilo}}</h2>
+  <p class="summary">{{sintesi_posizionamento}}</p>
+
+  <h2>{{label_esperienza}}</h2>
+  <!-- BEGIN esperienza (ripeti per ogni esperienza selezionata) -->
+  <div class="entry">
+    <div class="entry-head">
+      <span><span class="entry-role">{{ruolo}}</span> — <span class="entry-org">{{azienda}}, {{settore}}</span></span>
+      <span class="entry-period">{{periodo_da}} – {{periodo_a}}</span>
+    </div>
+    <ul>
+      <!-- BEGIN bullet (2-4 per esperienza, risultati quantificati per primi) -->
+      <li>{{bullet}}</li>
+      <!-- END bullet -->
+    </ul>
+  </div>
+  <!-- END esperienza -->
+
+  <h2>{{label_skill}}</h2>
+  <div class="skills">
+    <p><b>{{label_skill_gruppo_1}}:</b> {{skill_gruppo_1}}</p>
+    <p><b>{{label_skill_gruppo_2}}:</b> {{skill_gruppo_2}}</p>
+    <!-- aggiungi/rimuovi gruppi secondo il profilo (es. Linguaggi, Piattaforme, Tool AI) -->
+  </div>
+
+  <!-- BEGIN progetti (sezione opzionale: rimuovi se non rilevante per la JD) -->
+  <h2>{{label_progetti}}</h2>
+  <div class="entry">
+    <div class="entry-head">
+      <span class="entry-role">{{progetto_nome}}</span>
+      <span class="entry-period">{{progetto_contesto}}</span>
+    </div>
+    <ul><li>{{progetto_risultato}}</li></ul>
+  </div>
+  <!-- END progetti -->
+
+  <h2>{{label_formazione}}</h2>
+  <!-- BEGIN formazione -->
+  <div class="entry">
+    <div class="entry-head">
+      <span><span class="entry-role">{{titolo_studio}}</span> — <span class="entry-org">{{istituto}}</span></span>
+      <span class="entry-period">{{anno}}</span>
+    </div>
+  </div>
+  <!-- END formazione -->
+
+  <h2>{{label_lingue}}</h2>
+  <div class="langs">
+    <p>{{lingue_riga}}</p> <!-- es. "Italiano (madrelingua) · Inglese (C1, uso lavorativo quotidiano)" -->
+  </div>
+
+</body>
+</html>

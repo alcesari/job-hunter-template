@@ -1,0 +1,101 @@
+# master-profile — schema dato-agnostico
+#
+# Contratto: repo del sistema (file locale + git). Un file per utente,
+# nella radice del repo: master-profile.yaml
+# Consumato da: role-fit (2.1), cv-tailoring (2.2)
+# Popolato da: agent-config (1.1), tramite ingestione CV + domande di conferma
+#
+# È il nucleo condiviso tra tutti gli intenti di ricerca (D2): descrive CHI è
+# l'utente, non ha alcuna nozione di intento — quella vive nei file searches/.
+#
+# Principio: superset completo. Non tutti i campi devono essere compilati per
+# ogni utente, ma lo schema deve prevederli tutti dal giorno 1 — aggiungerne
+# dopo vorrebbe dire far ripassare CV già ingeriti da tutti gli utenti attivi.
+
+anagrafica:
+  nome: string
+  email: string                     # usata in intestazione CV/cover letter
+  telefono: string                  # usata in intestazione CV/cover letter
+  location_attuale: string          # città/paese di residenza
+  cittadinanza: [string]            # una o più, rilevante per diritto al lavoro
+  diritto_al_lavoro:                # per paese/area, non solo booleano
+    - area: string                  # es. "UE", "Svizzera", "UK"
+      stato: enum[si, no, da_verificare]
+  disponibilita_trasferimento: enum[si, no, solo_alcune_aree]
+  aree_trasferimento_ok: [string]   # se sopra è "solo_alcune_aree"
+  disponibilita_remoto: enum[full_remote, ibrido, solo_sede, indifferente]
+  preavviso:
+    durata: string                  # es. "30 giorni", "immediato"
+    note: string                    # es. clausole particolari, ferie da smaltire
+
+retribuzione:
+  attuale:
+    valore: number
+    valuta: string
+    lordo_netto: enum[lordo, netto]
+    periodicita: enum[annuo, mensile]
+  aspettativa:
+    valore_min: number
+    valore_max: number
+    valuta: string
+    lordo_netto: enum[lordo, netto]
+    periodicita: enum[annuo, mensile]
+  flessibilita: string              # note libere, es. "flessibile su RAL se smart working full"
+
+esperienze:                         # lista, ordine cronologico inverso
+  - azienda: string
+    ruolo: string
+    settore: string                 # settore dell'azienda, non del ruolo
+    periodo:
+      da: string                    # YYYY-MM
+      a: string                     # YYYY-MM o "presente"
+    durata_mesi: number             # derivato, ma esplicito per evitare ricalcoli a valle
+    tipo_ruolo: enum[individuale_tecnico, coordinamento, management]
+    descrizione: string             # cosa faceva, in prosa
+    stack_e_strumenti: [string]     # tecnologie, piattaforme, tool usati
+    responsabilita: [string]
+    risultati_quantificabili: [string]  # metriche vere, non aggettivi ("ridotto tempo di X del Y%")
+
+progetti:                           # eventuali progetti extra-lavorativi/personali rilevanti
+  - nome: string
+    contesto: enum[lavorativo, personale, accademico, open_source]
+    stack_e_strumenti: [string]
+    ruolo: string
+    risultato: string
+
+skill_tecniche:
+  linguaggi_programmazione: [string]
+  piattaforme_e_tool: [string]      # cloud, BI, ERP, ecc. — non solo linguaggi
+  livello_per_skill:                # opzionale, se si vuole granularità
+    - skill: string
+      livello: enum[base, intermedio, avanzato, esperto]
+      anni_esperienza: number
+
+strato_ai_adoption:                 # esplicitamente richiesto dal contratto dato
+  tool_ai_usati: [string]           # es. Claude, Copilot, ChatGPT
+  contesti_uso: [string]            # es. "scrittura codice", "analisi dati", "automazione workflow"
+  livello_autonomia: enum[uso_base, uso_avanzato, costruisce_soluzioni_ai_per_altri]
+  note: string
+
+lingue:
+  - lingua: string
+    livello: enum[A1, A2, B1, B2, C1, C2, madrelingua]
+    contesto_uso: string            # es. "lavorativo quotidiano", "solo letto"
+
+formazione:
+  - titolo: string
+    istituto: string
+    anno: string
+    rilevanza: string                # opzionale, perché rilevante per il ruolo cercato
+
+certificazioni:
+  - nome: string
+    ente: string
+    anno: string
+    scadenza: string                 # se applicabile
+
+preferenze_generali:
+  settori_preferiti: [string]
+  settori_da_evitare: [string]
+  dimensione_azienda_preferita: enum[startup, pmi, enterprise, indifferente]
+  note_libere: string
