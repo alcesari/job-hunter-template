@@ -1,0 +1,53 @@
+# role-fit-output — schema dato-agnostico
+#
+# Contratto: repo del sistema, cartella role-fit/ — un file YAML per
+# valutazione, nome file: <YYYY-MM-DD>-<azienda-slug>-<ruolo-slug>.yaml
+# (slug: minuscolo, spazi → trattini, senza caratteri speciali).
+# Prodotto da: role-fit (2.1). Letto da: cv-tailoring (2.2, per riusare
+# posizionamento e gap), application-tracker (2.3, linkato da application.yaml).
+#
+# CONVENZIONE score (scelta di progetto, definita in 2.1):
+# enum ordinale a 4 livelli, NON numerico. Motivo: un numero (0-100, 1-10)
+# suggerisce una precisione che una valutazione qualitativa non ha e invita
+# a filtri automatici a soglia — contro l'impianto anti-binario del sistema
+# (la valutazione informa, non scarta). Lo score non viaggia MAI da solo:
+# ha senso solo accanto a match/gaps/considerazioni.
+#   forte    — match sui requisiti core, gap solo marginali
+#   buono    — match sui core con 1-2 gap rilevanti ma colmabili/argomentabili
+#   parziale — match su una parte dei core, almeno un gap critico o più rilevanti
+#   debole   — il profilo risponde poco ai requisiti core della posizione
+#
+# CONVENZIONE esito (scelta di progetto, definita in 2.1; aggiornata per D8):
+# copre SOLO la fase di giudizio. Dal momento in cui la candidatura è
+# promossa al tracker, lo stato-workflow (candidata/in corso/offerta/chiusa)
+# vive ESCLUSIVAMENTE in applications/<id>/ nel repo (application-tracker, 2.3):
+# questo campo NON lo replica — due fonti dello stesso stato divergerebbero.
+#   valutato           — fit fatto, nessuna decisione presa
+#   da_candidare       — l'utente ha deciso di procedere, non ancora promossa
+#   scartato_dopo_fit  — l'utente ha deciso di non procedere
+#   promosso_a_tracker — candidatura creata in applications/<id>/: da qui in poi
+#                        lo stato è là (il nome dell'enum è storico; "tracker"
+#                        ora è la cartella applications/, non più Todoist)
+
+meta:
+  data_valutazione: string            # YYYY-MM-DD
+  ruolo: string                       # titolo della posizione
+  azienda: string
+  location: string
+  link: string                        # URL annuncio, se disponibile
+  sorgente: enum[indeed, linkedin_alert, indeed_alert, manuale]
+  intento: string                     # intent_id dell'intento che ha trovato la JD
+                                      #   (da ricerca_id, se dal digest/alert);
+                                      #   null per JD incollate a mano senza intento noto
+
+valutazione:
+  score: enum[forte, buono, parziale, debole]
+  match: [string]                     # 1-3 punti di forza concreti vs la JD
+  gaps:                               # gap PESATI, mai un nudo "manca X"
+    - gap: string                     # cosa manca o è debole
+      peso: enum[critico, rilevante, marginale]
+      nota: string                    # perché pesa così (affinità, colmabilità, centralità nella JD)
+  considerazioni: [string]            # seniority titolo vs profilo, segnali dall'annuncio, lingua, ecc.
+
+esito: enum[valutato, da_candidare, scartato_dopo_fit, promosso_a_tracker]
+note: string                          # libero, opzionale

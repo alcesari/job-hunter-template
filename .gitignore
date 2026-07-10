@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Python
+*.pyc
+__pycache__/
+
+# output di render temporanei (i PDF definitivi vivono in applications/<id>/materials/)
+*.tmp.pdf
+.weasyprint-cache/

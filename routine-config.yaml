@@ -1,0 +1,31 @@
+# routine-config.yaml — configurazione operativa della routine job-watch (F5)
+#
+# Scritto dalle sessioni interattive (a mano o su richiesta), letto dalla
+# routine job-watch a ogni run. Non è un search-profile (searches/): questi
+# valori sono infrastrutturali (dove legge gli alert, con che cadenza gira),
+# non criteri di ricerca — non hanno senso "per intento" e quindi non hanno
+# posto in searches/defaults.yaml → parametri_esecuzione (quello resta scoped
+# alla singola ricerca: finestra_temporale_ore, max_annunci_per_esecuzione).
+# Un file dedicato tiene le due cose separate senza sovraccaricare lo schema
+# del search-profile con campi che non un intento può mai voler overridare.
+
+gmail_label: "Job Hunter"
+# Etichetta Gmail da cui la routine legge gli alert LinkedIn/Indeed
+# (risolta a ID via list_labels, poi usata come label:<id> nella query — vedi
+# job-watch/SKILL.md, sezione "Fonti dati"). Se cambi l'etichetta in Gmail,
+# aggiorna questo valore nella stessa sessione: è l'unica copia versionata.
+
+cadenza_dichiarata: "1 run/giorno"
+# Default consigliato per iniziare. Da confermare (o rivedere) con
+# job-alert-tuner dopo un periodo di osservazione reale della cadenza
+# effettiva (runs.jsonl) e del rumore prodotto.
+
+note_ambiente_cloud: >
+  Questo file documenta la config, non la applica: l'ambiente della routine
+  cloud deve impostare separatamente, nei suoi secret/env, la variabile
+  JOB_HUNTER_ROUTINE=1 (attiva l'hook .claude/hooks/protect-files.sh che
+  protegge master-profile.yaml, searches/, role-fit/, applications/ dalle
+  scritture della routine — vedi job-watch/SKILL.md). Se la routine va
+  ricreata, questo file resta la fonte per ricostruire label e cadenza
+  attese; JOB_HUNTER_ROUTINE=1 va reimpostato a mano nella config
+  dell'ambiente cloud, non è derivabile dal repo.

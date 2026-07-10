@@ -1,0 +1,51 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(date)",
+      "Bash(date *)",
+      "Bash(git pull)",
+      "Bash(git pull *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push)",
+      "Bash(git push *)",
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git diff)",
+      "Bash(git diff *)",
+      "Bash(git log)",
+      "Bash(git log *)",
+      "Bash(git rm digests/*)",
+      "Bash(git rm source-log/*)",
+      "Bash(git rm -r staging/*)",
+      "Bash(git rm -r --cached staging/*)",
+      "Bash(python scripts/send_digest.py *)",
+      "Bash(python3 scripts/send_digest.py *)",
+      "Edit(state.json)",
+      "Edit(PIPELINE.md)",
+      "Edit(source-log/**)",
+      "Edit(staging/**)",
+      "Edit(digests/**)",
+      "Write(state.json)",
+      "Write(PIPELINE.md)",
+      "Write(source-log/**)",
+      "Write(staging/**)",
+      "Write(digests/**)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/protect-files.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
