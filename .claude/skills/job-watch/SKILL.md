@@ -47,12 +47,14 @@ umana promuove la candidatura (allora è una sessione interattiva a scriverle).
   e pusha. Una modifica ai profili fatta in chat ma non pushata è invisibile alla run.
 - **Il commit deve ATTERRARE SU `main`** (non su un branch orfano). `state.json`
   è il dedup: se la telemetria di una run resta su un branch non mergiato, il giro
-  successivo riparte da uno stato vecchio e ri-propone le stesse offerte. Quindi:
-  se l'ambiente cloud lavora su un branch di servizio, la run deve **aprire una PR
-  e mergiarla su `main`** (auto-merge) — oppure pushare direttamente su `main` dove
-  consentito. Lo strato operativo è append-only e non richiede revisione umana:
-  l'auto-merge è sicuro e necessario. (Config routine cloud: abilita l'auto-merge
-  della PR, o concedi alla routine il permesso di push diretto su `main`.)
+  successivo riparte da uno stato vecchio e ri-propone le stesse offerte. Lo strato
+  operativo è append-only e non richiede revisione umana, quindi il percorso a zero
+  conferme è il **push diretto su `main`** (coperto dall'allowlist — vedi sezione
+  autonomia sotto). PR+auto-merge NON è il percorso di default: richiederebbe `gh`,
+  che non è (volutamente) allowlistato. Usalo solo se l'ambiente cloud ti impone di
+  lavorare su un branch di servizio e non concede push diretto su `main`; in quel
+  caso abilita l'auto-merge della PR nella config della routine (l'alternativa,
+  lasciare il branch non mergiato, romperebbe il dedup del giro successivo).
 
 ## Autonomia della run (zero conferme umane) e enforcement D5
 
@@ -116,7 +118,7 @@ v1 usa i due canali legittimi disponibili oggi (le piattaforme spingono i dati, 
    La ricerca Gmail include di default anche la posta ARCHIVIATA, quindi
    l'utente può filtrare/archiviare gli alert per tenere pulita la Inbox senza
    renderli invisibili alla routine. Se `routine-config.yaml` (radice del
-   repo, F5) dichiara una **`gmail_label`**, preferisci scopare la query a
+   repo, F5) dichiara una **`gmail_label`**, preferisci restringere la query a
    quella (`label:<id>` — risolvi il nome → ID con `list_labels`), con
    fallback sui mittenti se il file manca o il campo è vuoto. Non restringere
    mai la query alla sola Inbox (`in:inbox` escluderebbe gli archiviati).
