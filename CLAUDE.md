@@ -62,10 +62,19 @@ job-watch (la routine batch di sourcing — Modulo 1.3).
 
 ## Strato operativo (scritto solo dalla routine, regola di proprietà D5)
 La routine `job-watch` produce: `source-log/YYYY-MM.jsonl` (telemetria),
-`state.json` (dedup), `staging/<id>/` (offerte pre-lavorate in attesa di
-revisione umana — contratto D4), `digests/YYYY-MM-DD.md` + email Gmail (il
-digest, con sezioni obbligate scadenze+pipeline), `PIPELINE.md` (vista funnel
-rigenerabile). Contratti in `.claude/skills/job-watch/references/`.
+`source-log/runs.jsonl` (ledger delle run: riga di start committata subito, riga
+di end con esito `ok|parziale|fallita` — una start orfana = run morta a metà,
+diagnosticabile dal solo repo, F8), `state.json` (dedup), `staging/<id>/`
+(offerte pre-lavorate in attesa di revisione umana — contratto D4),
+`digests/YYYY-MM-DD.md` + consegna Gmail (il digest, con sezioni obbligate
+scadenze+pipeline; **nella routine cloud la consegna è una bozza** — l'SMTP
+diretto fallisce nel sandbox, l'invio reale vale solo per un'eventuale routine
+Desktop locale), `PIPELINE.md` (vista funnel rigenerabile). A ogni run applica
+anche una **policy di retention** (potatura di `seen` vecchio, digest/staging
+scartati oltre soglia — F9). Contratti in `.claude/skills/job-watch/references/`.
+Config operativa (non criteri di ricerca) in `routine-config.yaml`: etichetta
+Gmail e cadenza dichiarata, scritti dalle sessioni interattive, letti dalla
+routine (F5).
 Eccezione dichiarata: `PIPELINE.md` è co-scritto (lo rigenera anche
 `application-tracker` su richiesta) — chi lo tocca lo rigenera SEMPRE
 integralmente da `applications/`, mai merge manuale; in conflitto vince la
@@ -76,6 +85,19 @@ così la routine gira senza conferme umane. La rete di sicurezza è l'hook
 `.claude/hooks/protect-files.sh`: nelle sessioni con `JOB_HUNTER_ROUTINE=1`
 (la routine cloud la imposta) blocca ogni scrittura su master-profile,
 searches/, role-fit/, applications/.
+
+## Ridistribuzione — branch `template` (leggi prima di toccarne i pezzi)
+Esiste un branch `template` pubblicabile, privo di qualsiasi dato personale,
+generato da `main` come **snapshot a radice orfana** (né merge né rebase: la
+storia di `main` è satura di PII per costruzione). A ogni push su `main` il
+workflow `.github/workflows/sync-template.yml` ricostruisce lo snapshot e apre
+una PR verso `template` (non push diretto). Meccanismo e regole di estensione in
+`ARCHITETTURA-TEMPLATE.md`; i pezzi vivono in `templating/` +
+`scripts/sync-template.sh`. Regola pratica: se aggiungi una cartella con dati
+personali aggiornala in `templating/exclude-paths.txt` (+ scan-identifiers se
+introduci nuovi identificatori); se aggiungi una skill funzionale, aggiungile la
+guardia di readiness e aggiorna la tabella in `ARCHITETTURA-TEMPLATE.md`. Lo
+scan è fail-closed: un dato personale sfuggito blocca il sync, non lo espone.
 
 ## Documenti di riferimento (contesto, non vincoli aggiuntivi)
 `.docs/analisi-esplorativa-job-search-ai_FABLE-01.md` — analisi architetture (fase 1)
