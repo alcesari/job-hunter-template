@@ -72,7 +72,7 @@ job-hunter/
 ├─ source-log/           # telemetria della routine (vuota nel template)
 ├─ staging/              # offerte pre-lavorate in attesa di revisione (vuota)
 ├─ digests/              # digest generati (vuota nel template)
-├─ scripts/              # utility (es. invio digest via SMTP)
+├─ scripts/              # utility (es. consegna digest: SMTP se possibile, altrimenti bozza)
 ├─ docs/                 # runbook operativi (es. cancellazione GDPR)
 ├─ .claude/skills/       # le skill del sistema
 └─ CLAUDE.md             # contesto permanente per l'agente
