@@ -16,7 +16,7 @@ per il digest — decide solo il fallback):
 
 Le credenziali vivono SOLO come secret dell'ambiente, mai nel repo.
 
-Nota nota (2026-07-08): nella routine CLOUD questo script fallisce
+Nota (2026-07-08): nella routine CLOUD questo script fallisce
 strutturalmente con `OSError(97, 'Address family not supported by protocol')`
 — il sandbox non espone socket di rete grezzi (smtplib ne apre uno diretto),
 solo i canali già strumentati (connettori MCP, git). Non è un bug: è un

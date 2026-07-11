@@ -11,7 +11,7 @@ anche dopo `git push`. Questo runbook serve solo quando serve rimuovere un
 dato personale **da tutta la storia**, non solo dallo stato attuale — es.
 richiesta di cancellazione GDPR su un dato che è stato committato per errore
 (un numero di telefono sbagliato, un'email di un terzo finita in una nota, un
-file caricato per sbaglio in `.docs/`).
+file caricato per sbaglio).
 
 Se il dato è solo nello stato attuale (non serve toccare la storia), **non**
 serve questo runbook: basta la modifica normale + commit + push.
@@ -41,9 +41,10 @@ serve questo runbook: basta la modifica normale + commit + push.
    o un intero file (es. un CV caricato per sbaglio). `git filter-repo`
    supporta entrambi i casi con opzioni diverse.
 
-   Per un **file** (es. rimuovere `.docs/CV-vecchio.pdf` da tutta la storia):
+   Per un **file** (es. rimuovere un CV caricato per sbaglio da tutta la storia —
+   sostituisci col percorso reale):
    ```bash
-   git filter-repo --path .docs/CV-vecchio.pdf --invert-paths
+   git filter-repo --path percorso/del/file.pdf --invert-paths
    ```
 
    Per un **valore testuale** (es. un numero di telefono committato per
