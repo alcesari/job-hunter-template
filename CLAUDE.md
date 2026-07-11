@@ -77,11 +77,20 @@ così la routine gira senza conferme umane. La rete di sicurezza è l'hook
 (la routine cloud la imposta) blocca ogni scrittura su master-profile,
 searches/, role-fit/, applications/.
 
-## Documenti di riferimento
-La cartella `.docs/` (analisi di design e storia delle decisioni del
-progetto originale) non è inclusa in questo branch template. Questo file
-(`CLAUDE.md`) resta la fonte delle decisioni di design valide da
-rispettare; il README spiega come iniziare.
+## Documenti di riferimento (contesto, non vincoli aggiuntivi)
+`.docs/analisi-esplorativa-job-search-ai_FABLE-01.md` — analisi architetture (fase 1)
+`.docs/lista-revisione-skill-job-hunter.md` — lista di revisione da applicare (fase 4)
+`.docs/revisioni/` — audit di miglioria del sistema (fase 5+)
+Consultali per il "perché" dietro una decisione; questo file resta la fonte
+delle decisioni valide da rispettare.
+
+**Due cartelle documentali, scopi distinti (non consolidarle)**: `.docs/`
+(nascosta) è la storia di design e gli audit interni di *questa* istanza —
+sempre esclusa dal branch `template` (`templating/exclude-paths.txt`), mai
+spedita a un futuro utente. `docs/` (visibile) contiene solo materiale
+generico pensato per essere spedito ai futuri utenti del template (es. i
+runbook operativi come `docs/runbook-cancellazione-gdpr.md`): niente dati
+personali, niente storia di design specifica di questa istanza.
 
 ## Anti-drift documentale — README e contratti
 
