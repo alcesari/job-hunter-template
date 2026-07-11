@@ -65,7 +65,10 @@ conferma**, in sessione fresca (l'ambiente cloud non eredita alcun
    più `git rm` scoped ai soli path operativi per la retention), `date`,
    `python[3] scripts/send_digest.py`, i tool MCP Gmail
    (`list_labels`, `search_threads`, `get_thread`, `get_message`,
-   `create_draft`) e Indeed (`search_jobs`, `get_job_details`), e le scritture
+   `create_draft`) e Indeed (`search_jobs`, `get_job_details`) — questi ultimi
+   hanno **ID legati all'account**: dove presenti in allowlist la routine li
+   invoca senza conferma, in un clone fresco (es. dal template) vanno approvati
+   quando colleghi i connettori, non sono committati — e le scritture
    Edit/Write sui soli path dello strato operativo (`source-log/**`,
    `staging/**`, `digests/**`, `state.json`, `PIPELINE.md`). **Disciplina
    conseguente**: per i file usa SEMPRE i tool Write/Edit (mai redirezioni
@@ -102,7 +105,7 @@ conferma**, in sessione fresca (l'ambiente cloud non eredita alcun
 
 ## Fonti dati (modulo sostituibile — unico punto di design aperto)
 
-v1 usa i due canali legittimi disponibili oggi, come da analisi (`.docs`, §2.1):
+v1 usa i due canali legittimi disponibili oggi (le piattaforme spingono i dati, zero rischio ToS):
 1. **Indeed via connettore** — ricerca diretta per ruolo × location dell'intento.
 2. **Alert email via Gmail** — LinkedIn (`jobs-noreply@linkedin.com`,
    `jobalerts-noreply@linkedin.com`) e Indeed (`alert@indeed.com`,

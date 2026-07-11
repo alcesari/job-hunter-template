@@ -80,8 +80,10 @@ Eccezione dichiarata: `PIPELINE.md` è co-scritto (lo rigenera anche
 integralmente da `applications/`, mai merge manuale; in conflitto vince la
 rigenerazione più recente. Mai fonte di verità.
 Enforcement D5: `.claude/settings.json` (committato) allowlista git, lo script
-del digest, i tool MCP della routine e le scritture sui soli path operativi —
-così la routine gira senza conferme umane. La rete di sicurezza è l'hook
+del digest e le scritture sui soli path operativi; i tool MCP dei connettori
+(Gmail/Indeed) hanno ID legati all'account — dove presenti in allowlist la
+routine li usa senza conferma, in un clone fresco vanno approvati al
+collegamento — così la routine gira senza conferme umane. La rete di sicurezza è l'hook
 `.claude/hooks/protect-files.sh`: nelle sessioni con `JOB_HUNTER_ROUTINE=1`
 (la routine cloud la imposta) blocca ogni scrittura su master-profile,
 searches/, role-fit/, applications/.
