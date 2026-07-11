@@ -96,7 +96,7 @@ la promozione sposta la cartella senza rimappare nulla.
 
 - La routine crea solo `pending`; non promuove, non scarta, non riapre.
 - Una voce promossa non torna in staging (vive in `applications/`).
-- `staging/` è potabile: si può svuotare senza perdere verità (le offerte viste
+- `staging/` si può svuotare senza perdere verità (le offerte viste
   restano in `state.json`/`source-log/`, le candidature vere in `applications/`).
   In pratica: la routine elimina a ogni run le voci `discarded` più vecchie di
   3 mesi (passo Retention di `job-watch/SKILL.md`); le `pending` non si toccano

@@ -55,7 +55,7 @@ def main() -> int:
     to = os.environ.get("DIGEST_TO", addr)
     if not addr or not pw:
         print("GMAIL_ADDRESS / GMAIL_APP_PASSWORD non impostati → invio saltato "
-              "(la routine ricada sulla bozza via connettore Gmail).")
+              "(la routine ricade sulla bozza via connettore Gmail).")
         return EXIT_SKIPPED
 
     body = path.read_text(encoding="utf-8")
@@ -81,7 +81,7 @@ def main() -> int:
             s.login(addr, pw)
             s.send_message(msg)
     except Exception as e:  # noqa: BLE001 — degradazione elegante, ma esito distinguibile
-        print(f"Invio digest fallito ({e!r}) → la routine ricada sulla bozza.")
+        print(f"Invio digest fallito ({e!r}) → la routine ricade sulla bozza.")
         return EXIT_FAILED
 
     print(f"Digest inviato a {to}: {subject}")
