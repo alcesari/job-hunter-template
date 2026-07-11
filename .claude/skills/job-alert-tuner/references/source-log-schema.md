@@ -1,6 +1,6 @@
 # source-log — contratto dato (definito da job-alert-tuner, modulo 1.2.2)
 
-Questo file È il contratto che la strumentazione della routine `job-watch` dovrà rispettare quando inizierà a scrivere il `source-log`. La strumentazione della routine è fuori dal perimetro dello Studio: finché non viene fatta, i file non esistono e `job-alert-tuner` lo gestisce come caso previsto (vedi SKILL.md).
+Questo file È il contratto che la routine `job-watch` rispetta scrivendo il `source-log` a ogni run. Se i file non esistono, la routine non ha ancora girato (o l'ultima run è fallita prima di scrivere): `job-alert-tuner` lo gestisce come caso previsto (vedi SKILL.md).
 
 ## Dove vive
 
@@ -71,7 +71,7 @@ Letto da: `job-alert-tuner` (frequenza reale delle run, run fallite/parziali)
 e da chiunque debba diagnosticare "la routine sta girando?" dal solo repo.
 Righe malformate: stesso trattamento dei mensili (scarta, conta, riporta).
 
-## Note per la strumentazione della routine (task aperto)
+## Note sull'implementazione nella routine
 
 - Log da scrivere nello stesso turno del commit di `state.json` (punto 8 della routine), per non avere run loggate a metà.
 - Rotazione mensile: la routine scrive nel file del mese corrente (`source-log/<anno>-<mese>.jsonl`), creandolo se non esiste.

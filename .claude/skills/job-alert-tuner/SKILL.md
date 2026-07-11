@@ -22,14 +22,14 @@ Prima di calcolare metriche, verifica il prerequisito minimo di questa skill: es
 
 ## Contratto dati
 
-Il `source-log` vive nel repo, in `source-log/YYYY-MM.jsonl` (un file JSONL per mese, rotazione mensile). Lo schema completo — chiavi, enum, campo `intento_id`, semantica "una riga = un annuncio osservato da una ricerca in una run" — è in `references/source-log-schema.md`: **leggilo prima di ogni analisi**, è il contratto che questa skill stessa ha definito e che la strumentazione della routine dovrà rispettare.
+Il `source-log` vive nel repo, in `source-log/YYYY-MM.jsonl` (un file JSONL per mese, rotazione mensile). Lo schema completo — chiavi, enum, campo `intento_id`, semantica "una riga = un annuncio osservato da una ricerca in una run" — è in `references/source-log-schema.md`: **leggilo prima di ogni analisi**, è il contratto che questa skill ha definito e che la routine `job-watch` rispetta scrivendolo a ogni run.
 
 ## Caso base da gestire per primo: il log non c'è (previsto, non un errore)
 
-Il `source-log` è scritto dalla ROUTINE, e la strumentazione della routine potrebbe non essere ancora stata fatta (è un task aperto del progetto, fuori dal perimetro dello Studio). Quindi, prima di tutto:
+Il `source-log` è scritto dalla routine `job-watch`: se manca, la routine non ha ancora girato (o l'ultima run è fallita prima di scrivere — controlla `source-log/runs.jsonl`, il ledger delle run). Non è un errore, è uno stato previsto. Quindi, prima di tutto:
 
 1. Guarda nella cartella `source-log/` del repo (file locali in sessione Claude Code, nessun connettore): cerca i file `YYYY-MM.jsonl`. Se una finestra temporale richiesta copre più mesi, i file mensili corrispondenti vanno **concatenati** (leggendoli tutti riga per riga).
-2. **Nessun file / cartella vuota** → spiega con calma: "il source-log non esiste ancora: lo produce la routine job-watch, che va prima strumentata per scriverlo (il contratto è già definito in questa skill). Finché non succede, non ci sono metriche calcolabili." Nessun crash, nessun tentativo di ricostruire il log da altre fonti (email digest, state.json): dati parziali produrrebbero metriche fuorvianti.
+2. **Nessun file / cartella vuota** → spiega con calma: "il source-log non esiste ancora: lo produce la routine job-watch a ogni run. Se è vuoto, la routine non ha ancora girato (o l'ultima run è fallita — vedi `runs.jsonl`). Finché non c'è almeno una run, non ci sono metriche calcolabili." Nessun crash, nessun tentativo di ricostruire il log da altre fonti (email digest, state.json): dati parziali produrrebbero metriche fuorvianti.
 3. **File presente ma vuoto (0 righe)** → stesso messaggio, più il fatto che il file esiste ma nessuna run ha ancora loggato.
 4. **File presente ma con poche run** (1-2 `run_id` distinti) → calcola comunque, ma dichiara che con così poche esecuzioni le metriche sono indicative, non conclusive.
 

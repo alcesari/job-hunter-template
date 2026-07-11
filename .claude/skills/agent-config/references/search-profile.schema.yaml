@@ -89,7 +89,7 @@ fonti:
     note: string                     # es. per LinkedIn: che tipo di alert è configurato
 
 # override — opzionale. Ridichiara SOLO i campi di defaults.yaml che questo
-# intento vuole diverti. Assente o vuoto = eredita tutto dai defaults.
+# intento vuole far divergere. Assente o vuoto = eredita tutto dai defaults.
 # Ogni chiave qui ha la stessa struttura del campo omonimo in defaults.yaml e
 # lo SOSTITUISCE per questo intento (non si fa merge parziale dentro il campo).
 override:
