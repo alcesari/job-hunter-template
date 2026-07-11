@@ -83,7 +83,12 @@ struttura): si riempiono man mano che usi il sistema.
 
 ## Cosa serve collegare
 
-- **Claude Code Desktop** (le scritture su file + git avvengono qui).
+- **Claude Code Desktop** (le scritture su file + git avvengono qui). Richiede
+  un **piano Claude a pagamento** (o accesso API a consumo): il ciclo completo
+  — onboarding, routine autonoma, valutazioni, generazione CV — usa capacità
+  agentiche che il tier gratuito di claude.ai non copre, ed è comunque
+  sola-lettura sul connettore GitHub (non può scrivere/committare). Mettilo in
+  conto prima di iniziare, non a metà onboarding.
 - Un **connettore Indeed** e un **connettore Gmail** (per il sourcing e per
   leggere gli alert / preparare bozze). Li colleghi dalle impostazioni
   connettori; l'onboarding ti dice quando servono. Nota: l'allowlist in
