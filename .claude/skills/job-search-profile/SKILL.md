@@ -20,6 +20,13 @@ description: >-
 
 Modulo 1.2 del progetto Job Hunter. Modifica le ricerche **già esistenti** nella cartella `searches/` del repo (D2: `defaults.yaml` condiviso + un file per intento), dopo l'onboarding. È un editor, non un creatore *ex novo del sistema*: la nascita del profilo (il primo intento) e lo schema canonico vivono in `agent-config` (1.1) — questa skill non li duplica. Ma dopo l'onboarding è QUI che si aggiungono/mettono in pausa/archiviano gli intenti successivi: creare un intento in più NON è rifare l'onboarding (riusa il `master-profile` esistente), quindi NON si reindirizza ad `agent-config` per quello.
 
+## Precondizioni di readiness
+
+A differenza delle altre skill dello Studio, qui il gate non è un singolo booleano — due casi distinti:
+
+1. **Sistema vergine** (nessun `master-profile.yaml` valorizzato, `searches/` assente o con solo `defaults.yaml` scaffold): NON creare nulla qui. L'utente non ha ancora fatto l'onboarding. Fermati e reindirizza ad `agent-config` con una frase specifica al gap reale, non un generico "profilo non trovato", es.: "Per modificare i tuoi criteri di ricerca mi serve prima un profilo — non risulta ancora configurato: vuoi che partiamo dall'onboarding per crearlo adesso?". Un intento creato fuori dall'intervista di onboarding salterebbe le domande su vincoli/preferenze e nascerebbe monco.
+2. **Master-profile presente ma nessun intento** (caso raro): NON è "sistema vergine" — non reindirizzare ad `agent-config`. Puoi creare qui il primo intento con la conversazione breve descritta in "Ciclo di vita degli intenti" (riusa il `master-profile` esistente, non rifà l'intervista completa).
+
 ## Cosa fa / cosa NON fa
 
 - FA: legge `searches/` dal repo, applica modifiche puntuali richieste dall'utente (ruoli, location, seniority, esclusioni, settori, lingue annuncio, fonti, parametri esecuzione), distinguendo se toccano i `defaults` condivisi o un singolo intento; gestisce il ciclo di vita degli intenti (crea, pausa, archivia); riscrive i file e committa.
@@ -33,10 +40,11 @@ Se il file schema non è raggiungibile (installazione parziale del pacchetto ski
 
 Un'istanza di esempio compilata (dati della prima istanza di test del progetto, nessun dato anagrafico) è in `references/example-search-profile.yaml`: mostra `defaults.yaml` + un intento. Usala per capire come si compila un campo, MAI come default da copiare nel profilo di un altro utente.
 
-## Precondizioni
+## Precondizioni tecniche
 
-1. **Repo del sistema** — sei in una sessione Claude Code su un clone del repo (nessun `tool_search`: `searches/` è un file locale, non un connettore). Se stessi girando da chat claude.ai pura, il connettore GitHub è di sola lettura: potresti mostrare le modifiche ma NON scriverle — in quel caso dichiaralo e rimanda il salvataggio a una sessione Claude Code.
-2. **Ricerche esistenti** — verifica che `searches/` contenga almeno un intento (oltre a `defaults.yaml`). Se `searches/` è vuoto/assente e non c'è un `master-profile.yaml` valorizzato: NON creare il profilo qui. Spiega che il sistema si inizializza con l'onboarding (`agent-config`) e chiedi se vuole avviarlo — un profilo nato fuori dall'intervista salterebbe le domande su vincoli/preferenze e nascerebbe monco. Se invece esiste già il master-profile ma nessun intento (caso raro), puoi creare il primo intento qui con la conversazione breve di creazione (vedi Ciclo di vita).
+**Repo del sistema** — sei in una sessione Claude Code su un clone del repo (nessun `tool_search`: `searches/` è un file locale, non un connettore). Se stessi girando da chat claude.ai pura, il connettore GitHub è di sola lettura: potresti mostrare le modifiche ma NON scriverle — in quel caso dichiaralo e rimanda il salvataggio a una sessione Claude Code.
+
+(Il gate su sistema vergine vs master-profile-senza-intento è in "Precondizioni di readiness" in testa al file — qui resta solo il prerequisito tecnico dell'ambiente.)
 
 ## Flusso
 
