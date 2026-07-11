@@ -65,7 +65,7 @@ lasciava alcuna traccia). `esito: parziale` = run completata con degradazioni
 (fonte saltata, invio digest fallito — exit 4 di `send_digest.py` —,
 telemetria non scritta), dettagliate in `note`. Il ledger non ruota
 mensilmente: due righe per run pesano nulla e la storia intera è utile;
-è comunque strato operativo potabile (vedi retention).
+resta comunque strato operativo, soggetto alle stesse regole di retention (vedi sopra).
 
 Letto da: `job-alert-tuner` (frequenza reale delle run, run fallite/parziali)
 e da chiunque debba diagnosticare "la routine sta girando?" dal solo repo.
