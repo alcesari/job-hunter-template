@@ -82,7 +82,11 @@ Esempi di mappatura:
   disponibili, sito non raggiungibile), scrivi comunque la voce ma con
   `robots_ok: da_verificare` — MAI `si` senza verifica reale — e dillo
   all'utente esplicitamente ("non sono riuscito a verificare X, l'azienda
-  resta tracciata ma non verrà interrogata finché non la riverifico").
+  resta tracciata ma non verrà interrogata finché non la riverifico"). Per
+  tier A/B, il runbook include anche lo sblocco del dominio nel sandbox di
+  rete (`sandbox.network.allowedDomains` in `.claude/settings.json`, Passo
+  6-bis del runbook) — senza quello l'azienda risulta attiva ma la routine
+  cloud la trova bloccata al primo run (incidente reale del 2026-07-12).
 - "togli/sospendi Generali" → `attiva: false` nella voce (congela, non
   cancella — stessa semantica di stato:pausa).
 
