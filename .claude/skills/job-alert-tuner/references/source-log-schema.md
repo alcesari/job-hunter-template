@@ -33,7 +33,7 @@ Se lo stesso annuncio è restituito da 3 ricerche diverse nella stessa run → 3
 | `azienda_fonte` | solo se `fonte: career_page` | string | `id` dell'azienda in `searches/companies.yaml` la cui career page ha prodotto la riga (es. `generali-gruppo`). Assente per le altre fonti. È la chiave che permette al tuner di misurare la resa per-azienda e il cross-source overlap. |
 | `ricerca_id` | sì | string | Identificatore STABILE della ricerca che ha prodotto la riga, **prefissato dall'intento**. Convenzione: `<intento_id>:<fonte>:<titolo>:<location>` tutto minuscolo (es. `data-engineering-eu:indeed:data engineer:milano`, `data-engineering-eu:linkedin_alert:etl amsterdam`). Il prefisso d'intento preserva il requisito di stabilità e rende l'attribuzione univoca: la routine non deve cambiare formato tra una run e l'altra. Per `fonte: career_page` la ricerca non è una query titolo×location ma "scarica il feed dell'azienda": convenzione `<intento_id>:career_page:<azienda_fonte>` (es. `backend-fullstack-ecommerce:career_page:generali-gruppo`). |
 | `annuncio_id` | sì | string | Chiave canonica dell'annuncio — LO STESSO identificatore usato in `state.json` per il dedup. È la chiave che permette di calcolare l'overlap. Formato definitivo `<fonte>:<slug(azienda)>:<slug(titolo)>:<slug(location)>` (regola di slug in `job-watch/SKILL.md`, sezione dedup). |
-| `esito` | sì | enum | Esito pipeline per questa run: `incluso_principale` \| `incluso_da_verificare` \| `scartato_lingua` \| `scartato_livello` (Head of/Director/stage) \| `scartato_location` (fuori dalle `location_target` dell'intento — prodotto SOLO dal filtro location del canale `career_page`, che fetcha per-azienda e non per-location; gli altri canali hanno la location già nella query) \| `scartato_dedup` (già in state.json) \| `non_lavorato_cap` (tagliato dal cap max annunci). |
+| `esito` | sì | enum | Esito pipeline per questa run: `incluso_principale` \| `incluso_da_verificare` \| `scartato_lingua` \| `scartato_livello` (Head of/Director/stage o anti-target di `esclusioni.titoli_da_escludere`) \| `scartato_ruolo` (titolo non pertinente ai `ruoli_target` dell'intento — gate positivo di ruolo, prodotto SOLO dal canale `career_page`, che fetcha tutte le posizioni dell'azienda; distinto da `scartato_livello`, che è un anti-target dichiarato, mentre questo è "ruolo semplicemente estraneo": es. HR/actuarial/sales a Generali) \| `scartato_location` (fuori dalle `location_target` dell'intento — anch'esso SOLO `career_page`, che fetcha per-azienda e non per-location; gli altri canali hanno ruolo e location già nella query) \| `scartato_dedup` (già in state.json) \| `non_lavorato_cap` (tagliato dal cap max annunci). |
 | `titolo` | no | string | Titolo annuncio, per leggibilità/debug. |
 | `azienda` | no | string | Azienda, per leggibilità/debug. |
 | `location` | no | string | Location dichiarata dall'annuncio. |
@@ -47,13 +47,16 @@ Chiavi aggiuntive per riga sono ammesse senza rompere nulla (è la proprietà ch
 {"run_id":"2026-07-05T06:00:00Z","intento_id":"data-engineering-eu","fonte":"indeed","ricerca_id":"data-engineering-eu:indeed:bi developer:milano","annuncio_id":"indeed:azienda-x:data-engineer:milano","esito":"scartato_dedup","titolo":"Data Engineer","azienda":"Azienda X","location":"Milano"}
 {"run_id":"2026-07-05T06:00:00Z","intento_id":"data-engineering-eu","fonte":"linkedin_alert","ricerca_id":"data-engineering-eu:linkedin_alert:etl amsterdam","annuncio_id":"linkedin_alert:azienda-y:etl-developer:amsterdam","esito":"incluso_da_verificare","titolo":"ETL Developer","azienda":"Azienda Y","location":"Amsterdam"}
 {"run_id":"2026-07-12T06:00:00Z","intento_id":"backend-fullstack-ecommerce","fonte":"career_page","azienda_fonte":"generali-gruppo","ricerca_id":"backend-fullstack-ecommerce:career_page:generali-gruppo","annuncio_id":"career_page:generali-italia:java-backend-developer:milano","esito":"incluso_principale","titolo":"Java Backend Developer","azienda":"Generali Italia SpA","location":"Milano"}
+{"run_id":"2026-07-12T06:00:00Z","intento_id":"backend-fullstack-ecommerce","fonte":"career_page","azienda_fonte":"generali-gruppo","ricerca_id":"backend-fullstack-ecommerce:career_page:generali-gruppo","annuncio_id":"career_page:generali-italia:actuarial-analyst:trieste","esito":"scartato_ruolo","titolo":"Actuarial Analyst","azienda":"Generali Italia SpA","location":"Trieste"}
 {"run_id":"2026-07-12T06:00:00Z","intento_id":"backend-fullstack-ecommerce","fonte":"career_page","azienda_fonte":"simcorp","ricerca_id":"backend-fullstack-ecommerce:career_page:simcorp","annuncio_id":"career_page:simcorp:principal-sales-manager:manila","esito":"scartato_location","titolo":"Principal Sales Manager","azienda":"SimCorp","location":"Manila"}
 ```
 
-(L'ultima riga mostra il filtro location del canale `career_page`: SimCorp è
-fetchata per-azienda e restituisce anche posizioni globali fuori dalle
-`location_target` dell'intento — Manila non è compatibile con Milano/Roma/Remote
-Italia/Remote EU → `scartato_location`.)
+(Le ultime due righe mostrano i due filtri career_page-only, nell'ordine in cui
+la routine li applica. **Ruolo prima**: "Actuarial Analyst" a Generali non
+matcha nessun token distintivo dei `ruoli_target` backend/e-commerce →
+`scartato_ruolo` (è il filtro che taglia il grosso: ~90 posizioni non-tech su
+196). **Location poi**: "Principal Sales Manager" a SimCorp — Manila non è
+compatibile con Milano/Roma/Remote Italia/Remote EU → `scartato_location`.)
 
 (La seconda riga mostra il caso overlap: stesso `annuncio_id` da due ricerche; per la seconda risulta `scartato_dedup` perché già processato.)
 

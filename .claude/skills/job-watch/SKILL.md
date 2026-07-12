@@ -301,7 +301,53 @@ usando i valori effettivi dell'intento (defaults + override): esclusioni titoli
 (`esito: scartato_livello`), tipo contratto, lingue dell'annuncio
 (`esito: scartato_lingua`). `eccezione_se_ambiguo: true` → non scartare, segnala.
 
-**Filtro location — SOLO per `fonte: career_page`.** Gli altri canali hanno la
+**Filtro di rilevanza ruolo — SOLO per `fonte: career_page`** (applicalo per
+PRIMO, prima del filtro location: è il riduttore più grosso). Indeed e gli
+alert sono già query per ruolo (`titolo_principale`/`sinonimi`), quindi la
+pertinenza di ruolo è implicita a monte e lì NON si applica questo filtro. La
+career page invece fetcha **tutte** le posizioni dell'azienda — incluse quelle
+di funzioni completamente estranee (verificato: Generali espone ~90 posizioni
+HR / actuarial / sales / security governance / stage su 196 totali) — quindi
+serve un **gate positivo esplicito**: tieni un'offerta solo se il suo titolo
+matcha i `ruoli_target` dell'intento.
+
+- **Costruisci l'insieme dei token di ruolo distintivi** dall'unione di
+  `titolo_principale` + `sinonimi` di TUTTI i `ruoli_target` dell'intento,
+  normalizzati con la stessa regola di normalizzazione titolo del matcher
+  (`references/entity-resolution.md`, "Metrica di similarità titolo"). Un
+  titolo dell'offerta passa se contiene almeno un token distintivo.
+- **Distintivo ≠ generico — è il punto che fa funzionare il filtro.** I termini
+  di ruolo generici da soli (`developer`, `engineer`, `sviluppatore`,
+  `ingegnere`, `specialist`, `consultant`, `analyst`) matchano quasi tutto,
+  inclusi gli anti-target (Data Engineer, DevOps, embedded): NON usarli come
+  match da soli. Usa i **token di dominio** (es. per l'intento backend/e-commerce:
+  `java`, `backend`, `full-stack`, `e-commerce`, `integration`, `sap`,
+  `commerce`, `magnolia`, `hybris`, `cms`) e i **bigrammi** (`software engineer`,
+  `software developer`, `backend developer`). Questo è esattamente il set
+  applicato nella run del 2026-07-12 che ha portato 196→~7.
+- **Posture permissiva ma selettiva.** L'obiettivo è tagliare il grosso
+  fuori-dominio (HR, sales, actuarial), NON pre-giudicare il fit. Un titolo
+  borderline che condivide un token di dominio ma è di un sotto-settore diverso
+  (es. "System Integration Engineer" difesa, "Embedded Software Engineer") →
+  **NON scartarlo qui**: passa alla valutazione di fit (passo 5), che lo peserà
+  e tipicamente lo marcherà `debole`. Falso negativo (scartare un ruolo target
+  reale) = opportunità persa in silenzio, peggio di una voce `debole` in
+  staging — stessa asimmetria di rischio del matcher. `eccezione_se_ambiguo`
+  vale anche qui: nel dubbio, tieni.
+- Le `esclusioni.titoli_da_escludere` restano attive e **vincono**: un titolo
+  che matcha un token di dominio ma è anche un anti-target dichiarato
+  (es. "Data Engineer") → `scartato_livello`, non passa.
+
+Offerta il cui titolo non matcha nessun token distintivo dei `ruoli_target`
+(e non è un anti-target, che sarebbe `scartato_livello`) →
+`esito: scartato_ruolo` (nuovo esito career_page-only, vedi
+`job-alert-tuner/references/source-log-schema.md`; permette al tuner di
+misurare la resa/rumore per-azienda del canale, la metrica di valore
+cross-source). **Titolo assente** (non dovrebbe accadere — ogni adapter
+estrae almeno il titolo): non scartare, segnala l'anomalia.
+
+**Filtro location — SOLO per `fonte: career_page`** (applicalo DOPO il filtro
+di rilevanza ruolo sopra). Gli altri canali hanno la
 location già nella query a monte (Indeed cerca per ruolo × location, gli alert
 sono configurati per location): lì NON si applica questo filtro. Il canale
 career_page invece fetcha **per-azienda**, non per-location, quindi riceve tutte
