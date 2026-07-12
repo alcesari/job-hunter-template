@@ -67,6 +67,16 @@ Conteggio delle candidature per `status` (`da_candidare`/`candidata`/`in_corso`/
 Fonti fallite, alert non parsati, righe di source-log malformate, scrittura
 telemetria fallita, ecc. Trasparenza operativa: se qualcosa è degradato, si dice.
 
+**Career page — verdetto di diagnosi (obbligatoria se il canale è attivo)**:
+riporta testualmente il campo `diagnosis.verdetto` dell'output di
+`scripts/fetch_careers.py` — non riassumerlo, non riformularlo: è scritto per
+essere letto a colpo d'occhio senza interpretare i singoli errori per-azienda
+(distingue già da solo un fallimento isolato da un blocco sistemico
+dell'ambiente). Se `diagnosis` segnala "BLOCCO AMBIENTALE PROBABILE" per la
+prima volta, aggiungi una riga esplicita del tipo "⚠ career page: possibile
+blocco egress in questo ambiente, verificare nei prossimi run" — così è
+visibile anche a chi legge solo l'intestazione, non l'intero digest.
+
 ## Cosa il digest NON fa
 
 - Non cambia stati di candidature né promuove offerte: è sola lettura + notifica.
