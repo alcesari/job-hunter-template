@@ -35,7 +35,7 @@ meta:
   azienda: string
   location: string
   link: string                        # URL annuncio, se disponibile
-  sorgente: enum[indeed, linkedin_alert, indeed_alert, manuale]
+  sorgente: enum[indeed, linkedin_alert, indeed_alert, career_page, manuale]
   intento: string                     # intent_id dell'intento che ha trovato la JD
                                       #   (da ricerca_id, se dal digest/alert);
                                       #   null per JD incollate a mano senza intento noto
