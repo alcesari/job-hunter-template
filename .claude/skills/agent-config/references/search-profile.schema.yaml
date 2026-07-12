@@ -84,7 +84,10 @@ settori:
   esclusi: [string]
 
 fonti:
-  - nome: enum[indeed, linkedin_alert, indeed_alert]
+  - nome: enum[indeed, linkedin_alert, indeed_alert, career_page]
+    # career_page: la routine interroga le aziende di searches/companies.yaml
+    # (attiva:true, access_tier A|B) — l'anagrafica vive lì, non qui.
+    # Schema di companies.yaml: sezione (c) in fondo a questo file.
     attiva: boolean
     note: string                     # es. per LinkedIn: che tipo di alert è configurato
 
@@ -96,3 +99,121 @@ override:
   esclusioni: {}            # come sopra, se questo intento esclude/include titoli diversi
   lingue_annuncio: {}       # come sopra, se questo intento accetta lingue diverse
   parametri_esecuzione: {}  # come sopra, se questo intento usa finestra/cap diversi
+
+
+# ============================================================================
+# (c) searches/companies.yaml — anagrafica aziende di interesse
+# ============================================================================
+# Scritto da: job-search-profile (sessioni interattive) — MAI dalla routine
+#   (è searches/, proprietà interattiva D5, protetto da protect-files.sh).
+# Letto da: job-watch (canale career_page: itera su attiva:true e tier A|B).
+# Un file unico, chiave radice `companies`, una voce per azienda.
+
+companies:
+  - id: string                  # OBBLIGATORIO. Slug stabile (minuscolo, trattini),
+                                #   es. "generali-gruppo". È il valore che viaggia in
+                                #   source-log come `azienda_fonte` e in staging come
+                                #   `sources[].company_slug`. NON cambiarlo dopo la
+                                #   creazione (stessa regola dell'id intento).
+    nome: string                # OBBLIGATORIO. Etichetta leggibile, es. "Generali (gruppo)".
+    careers_url: string         # OBBLIGATORIO. URL della pagina careers RISOLTA dalla
+                                #   probe (quella vera, es. gogenerali.com/home/jobs —
+                                #   non necessariamente il dominio corporate).
+    access_tier: enum[A, B, C]  # OBBLIGATORIO. Esito della probe (vedi runbook):
+                                #   A = ATS noto con feed documentato
+                                #   B = API JSON scoperta per ispezione
+                                #   C = nessuna fonte dati leggibile (tracciata, non interrogata)
+    attiva: boolean             # OBBLIGATORIO. false = congelata (non interrogata,
+                                #   resta nel file — stessa semantica di stato:pausa).
+    verificato: string          # OBBLIGATORIO. YYYY-MM-DD dell'ultima probe riuscita.
+                                #   La routine lo usa per segnalare adapter stantii
+                                #   (>90 giorni senza ri-verifica → nota nel digest).
+    robots_ok: enum[si, no, da_verificare]  # OBBLIGATORIO per tier A|B. Esito della
+                                #   verifica robots.txt sul path dell'endpoint.
+                                #   Semantica STRETTA (voluta): solo `si` sblocca il
+                                #   fetch. `no` E `da_verificare` sono trattati
+                                #   IDENTICI dalla routine (equivalgono a tier C, NON
+                                #   interrogati) — `da_verificare` è il default per
+                                #   qualunque voce non passata dal runbook di probe
+                                #   (vedi "Validazione a runtime" sotto). Occorre
+                                #   un passaggio esplicito a `si` per attivare
+                                #   l'azienda, mai un default permissivo.
+    apply_url_template: string  # OPZIONALE. Template del link di candidatura diretta;
+                                #   placeholder {native_id} sostituito a runtime.
+                                #   Per tier C è l'URL statico della pagina careers.
+    note: string                # OPZIONALE. Contesto per l'umano (es. "una API copre
+                                #   più entità del gruppo; filtrare su companyName").
+
+    adapter:                    # OBBLIGATORIO. Discriminato da `kind`:
+      kind: enum[ats_feed, json_api, html_list, manual]
+
+      # --- kind: ats_feed (tier A) — campi aggiuntivi: ---
+      ats: enum[greenhouse, lever, ashby, smartrecruiters, recruitee, workable, personio]
+      token: string             # identificatore board/azienda nell'URL del vendor
+
+      # --- kind: json_api (tier B1) — campi aggiuntivi: ---
+      list_endpoint: string     # OBBLIGATORIO. URL GET/POST che elenca le posizioni.
+      http_method: enum[GET, POST]  # OPZIONALE, default GET. POST per pattern tipo Workday CXS.
+      count_endpoint: string    # OPZIONALE. URL GET del conteggio (se esiste, per paginare).
+      query: map                # OPZIONALE. Parametri/body fissi osservati nella probe.
+      iterate_param: string     # OPZIONALE. Nome del parametro da iterare su più valori
+                                #   (es. jobTypes per gogenerali) + `iterate_values: [string]`.
+      paginate_by: [string]     # OPZIONALE. Coppia [offset_param, limit_param].
+      field_map: map            # OBBLIGATORIO. Mappatura campi API → campi normalizzati.
+                                #   Chiavi normalizzate riconosciute (a sinistra):
+                                #   native_id (fortemente raccomandato), title, company,
+                                #   location, description_html|description_text,
+                                #   status, published_at, salary (se presente).
+      published_filter: map     # OPZIONALE. {campo: valore} da tenere, es.
+                                #   {currentStatus: PUBLISHED} — scarta il resto.
+      endpoint_stability: enum[stable, build_dependent]  # OPZIONALE. `build_dependent`
+                                #   se l'URL contiene un buildId che cambia ai deploy
+                                #   (es. Next.js _next/data/<buildId>/…, caso Bending
+                                #   Spoons): la routine deve ri-risolvere il buildId
+                                #   corrente a ogni run leggendo l'HTML della pagina,
+                                #   non hardcodarlo — più fragile di un endpoint stabile.
+
+      # --- kind: html_list (tier B2, sitemap o lista HTML statica) — campi aggiuntivi: ---
+      list_source: enum[sitemap, static_page]  # sitemap = robots.txt-declared XML;
+                                #   static_page = pagina HTML con markup prevedibile.
+      list_url: string          # OBBLIGATORIO. URL del sitemap XML o della pagina lista.
+      url_pattern: string       # OBBLIGATORIO se static_page. Pattern/selettore per
+                                #   estrarre i link posizione (es. CSS-like `a[href^="/jobs/"] h2`).
+      sitemap_filter: string    # OPZIONALE se sitemap. Filtro sugli URL del sitemap-index
+                                #   (es. "italy-it" per il sitemap Akkodis paese/lingua).
+      detail_fetch_required: boolean  # OBBLIGATORIO. true se titolo/location/JD si trovano
+                                #   solo aprendo la pagina di dettaglio (costo O(N), non O(1)).
+      detail_field_map: map     # OBBLIGATORIO se detail_fetch_required. Come field_map,
+                                #   ma per i campi estratti dalla pagina di dettaglio. Il
+                                #   VALORE è un selettore semplice, in una di tre forme
+                                #   (implementate da fetch_careers.py, stdlib-regex):
+                                #     - tag semplice: `h1`, `h2` (inner del primo match);
+                                #     - `jsonld:<campo>`: campo dello schema JobPosting
+                                #       JSON-LD (es. jsonld:description, jsonld:datePosted;
+                                #       jsonld:location = jobLocation.address.addressLocality
+                                #       |location|addressRegion, più sedi unite con ", ");
+                                #     - `meta:<property>`: <meta property|name="…" content>
+                                #       (es. meta:og:description).
+                                #   Un campo che la pagina non espone resta null (onesto):
+                                #   es. Arkemis non ha una location strutturata → location
+                                #   null in Fase 1 (il matcher non fonde mai con location null).
+
+      # --- kind: manual (tier C) — nessun campo aggiuntivo. ---
+      # La routine non interroga; il digest segnala l'azienda come "check manuale".
+
+# Nota di integrità: `access_tier: B` copre due varianti (`json_api` e
+# `html_list`), accomunate dal criterio che conta per il costo operativo —
+# niente headless, niente login — non dal formato della risposta. `access_tier`
+# e `adapter.kind` restano concordi (A↔ats_feed, B↔json_api|html_list,
+# C↔manual): sono ridondanti per costruzione, tenuti entrambi per leggibilità;
+# se divergono la voce è invalida e la routine la salta segnalandola nel digest
+# (non indovina quale dei due credere).
+#
+# Validazione a runtime (cosa la routine controlla comunque, indipendentemente
+# da chi ha scritto la voce): (1) coerenza access_tier↔adapter.kind; (2)
+# completezza dei campi obbligatori per il `kind` dichiarato; (3) robots_ok a
+# semantica stretta (solo `si` sblocca il fetch; assente/`da_verificare`/`no`
+# = trattata come tier C, non interrogata, segnalata nel digest). Cosa NON è
+# coperto: una voce con `robots_ok: si` mai verificato davvero, o un endpoint
+# sbagliato ma strutturalmente valido, la routine si fida e prova — non c'è un
+# secondo controllo che rifà la verifica ToS/robots al posto dell'umano.
