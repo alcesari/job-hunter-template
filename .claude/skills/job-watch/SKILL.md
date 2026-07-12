@@ -85,12 +85,21 @@ conferma**, in sessione fresca (l'ambiente cloud non eredita alcun
    `Bash(python scripts/fetch_careers.py *)` e
    `Bash(python3 scripts/fetch_careers.py *)` sono in allowlist (stesso pattern
    di `send_digest.py`) — la routine invoca lo script a zero conferme anche in
-   cloud, dove il socket test HTTPS non era ancora stato verificato
-   direttamente: lo script stesso, per costruzione, non fallisce mai in modo
+   cloud. Lo script stesso, per costruzione, non fallisce mai in modo
    distruttivo (degradazione elegante per-azienda, exit code 0 anche a rete
-   bloccata), quindi la prima run cloud DOPO questa attivazione È il test —
-   vedi "Fonti dati" punto 3 per l'obbligo di riportare `diagnosis.verdetto`
-   nel digest.
+   bloccata), quindi la prima run cloud DOPO questa attivazione È stata anche
+   il test — vedi "Fonti dati" punto 3 per l'obbligo di riportare
+   `diagnosis.verdetto` nel digest.
+   **Secondo gate, indipendente dal primo (incidente reale del 2026-07-12)**:
+   l'allowlist sopra autorizza il *comando*, ma il sandbox di Claude Code
+   applica ANCHE un blocco per-dominio (`sandbox.network.allowedDomains` in
+   `.claude/settings.json`) — un dominio non presente lì viene negato
+   automaticamente in un run non presidiato (`Tunnel connection failed: 403
+   Forbidden`), a prescindere dal comando permesso. La lista dei domini
+   allowlistati deve restare in sincronia con i domini effettivamente
+   contattati dagli adapter in `searches/companies.yaml`: è `job-search-profile`
+   (runbook di probe, Passo 6-bis) a tenerli allineati quando aggiunge
+   un'azienda tier A/B — non la routine, che non scrive `.claude/settings.json`.
 2. **Hook di enforcement `.claude/hooks/protect-files.sh`** (PreToolUse su
    Edit|Write): nelle sessioni della routine **blocca meccanicamente** ogni
    scrittura su `master-profile.yaml`, `searches/`, `role-fit/`,
