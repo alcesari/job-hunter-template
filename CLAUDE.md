@@ -52,8 +52,12 @@ Nulla rileva automaticamente un cambio di visibilità, quindi verificalo
 tu. Per cancellare un dato personale da tutta la storia git (non solo
 dall'HEAD), vedi il runbook `docs/runbook-cancellazione-gdpr.md`.
 
-Ancora aperto, deliberatamente: fonti dati (canali legittimi vs scraper terzi)
-— da testare in prototipo, non deciso a tavolino.
+Fonti dati (decisione post-prototipo 2026-07): oltre a Indeed/alert, la routine
+legge le career page delle aziende in searches/companies.yaml con adapter
+A (ATS noto) o B (API JSON scoperta via probe) — vedi
+.docs/analisi/analisi-career-pages-aziende-fusione-cross-fonte_2026-07-12.md.
+Lo scraping HTML/headless (fascia C) resta deliberatamente fuori: le aziende C
+sono tracciate nel digest e candidabili via link diretto, non lette.
 
 ## Skill disponibili
 Otto skill sotto `.claude/skills/`: agent-config, job-search-profile,
