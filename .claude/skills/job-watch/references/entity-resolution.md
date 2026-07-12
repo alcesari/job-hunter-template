@@ -50,6 +50,13 @@ slug esistente + rimozione dei suffissi titolo (sotto) + rimozione della
 seniority ridondante (`junior|senior|mid|medior`) SOLO se presente in uno solo
 dei due titoli.
 
+**Normalizzazione condivisa**: la stessa regola di normalizzazione titolo è
+usata anche dal **filtro di rilevanza ruolo del passo 4** per il canale
+`career_page` (`job-watch/SKILL.md`, §4) — un'unica regola, non due. Lì serve a
+estrarre i token di ruolo distintivi dai `ruoli_target` e a confrontarli col
+titolo dell'offerta; qui a confrontare due titoli tra loro. La normalizzazione
+è la stessa; l'uso a valle differisce.
+
 ## Matrice di decisione (si valuta solo se il gate azienda è passato)
 
 | Location | Similarità titolo | Esito |
