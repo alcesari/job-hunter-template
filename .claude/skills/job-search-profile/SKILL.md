@@ -83,10 +83,14 @@ Esempi di mappatura:
   `robots_ok: da_verificare` — MAI `si` senza verifica reale — e dillo
   all'utente esplicitamente ("non sono riuscito a verificare X, l'azienda
   resta tracciata ma non verrà interrogata finché non la riverifico"). Per
-  tier A/B, il runbook include anche lo sblocco del dominio nel sandbox di
-  rete (`sandbox.network.allowedDomains` in `.claude/settings.json`, Passo
-  6-bis del runbook) — senza quello l'azienda risulta attiva ma la routine
-  cloud la trova bloccata al primo run (incidente reale del 2026-07-12).
+  tier A/B, il runbook include anche lo sblocco del dominio (Passo 6-bis) —
+  **in due posti diversi**: `sandbox.network.allowedDomains` in
+  `.claude/settings.json` per il sandbox Bash locale (questo lo scrivi tu),
+  e Network access → Allowed domains nell'ambiente della Routine su
+  claude.ai/code/routines per la routine cloud (**questo NON lo puoi
+  scrivere tu**: dillo esplicitamente all'utente come passo manuale suo).
+  Senza entrambi l'azienda risulta attiva ma la routine cloud la trova
+  bloccata al primo run (incidente reale del 2026-07-12).
 - "togli/sospendi Generali" → `attiva: false` nella voce (congela, non
   cancella — stessa semantica di stato:pausa).
 

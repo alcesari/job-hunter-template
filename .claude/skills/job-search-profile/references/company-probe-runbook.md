@@ -134,39 +134,50 @@ evidente (vedi l'incidente documentato lì).
 
 ## Passo 6-bis — Sblocca il dominio nel sandbox di rete (OBBLIGATORIO per tier A/B)
 
-**Incidente noto (2026-07-12)**: le prime 5 aziende attivate in cloud hanno
-fallito tutte con lo stesso errore (`URLError: Tunnel connection failed: 403
-Forbidden`) nonostante l'allowlist dei comandi Bash fosse corretta. Causa: il
-sandbox di Claude Code applica **due gate di rete indipendenti**, non uno solo —
-dimenticare questo passo riproduce l'incidente per ogni azienda nuova:
+**Incidente noto (2026-07-12, diagnosticato e corretto in due tempi)**: le
+prime 5 aziende attivate in cloud hanno fallito tutte con lo stesso errore
+(`URLError: Tunnel connection failed: 403 Forbidden`) nonostante l'allowlist
+dei comandi Bash fosse corretta. Un primo fix (aggiungere
+`sandbox.network.allowedDomains` in `.claude/settings.json`) si è rivelato
+**insufficiente per la routine cloud**: quel meccanismo governa il sandbox
+Bash *locale* (Seatbelt/bubblewrap), non la policy di rete di una **Routine**
+cloud (claude.ai/code/routines), che è un ambiente separato con la sua
+configurazione **Network access**. Sono due gate diversi, in due posti
+diversi, con lo stesso nome concettuale — dimenticarne anche uno solo
+riproduce l'incidente per ogni azienda nuova.
 
-1. **Permesso di eseguire il comando** — `permissions.allow` in
-   `.claude/settings.json` (`Bash(python scripts/fetch_careers.py *)`): questo è
-   **generico**, copre già tutte le aziende, non richiede una voce per azienda.
-2. **Permesso di raggiungere il dominio** — `sandbox.network.allowedDomains`
-   nello stesso file: questo è **per-dominio**, enforced dal proxy di rete del
-   sandbox indipendentemente dal comando eseguito ("no domains are pre-allowed",
-   documentazione ufficiale). In una sessione interattiva un dominio nuovo
-   genera un prompt di approvazione; in un run non presidiato (routine cloud)
-   nessuno risponde, quindi il dominio è **bloccato automaticamente** (403),
-   non in attesa.
+**Estrai prima i domini** (comune a entrambi i passi sotto): l'host di
+`list_endpoint`, di `count_endpoint` se diverso, di `list_url` (html_list), e
+di `careers_url` se diverso dagli altri (necessario per `json_api` con
+`endpoint_stability: build_dependent`, che deve rileggere l'HTML della pagina
+per risolvere il `buildId` a ogni run). Tier C non richiede nulla qui: la
+routine non lo interroga mai.
 
-Un'azienda tier A/B **non funziona in cloud finché entrambi i gate non sono
-aperti**. Il primo (comando) è già coperto una volta per tutte; il secondo va
-esteso **a ogni azienda aggiunta**, qui:
+**(a) Se la routine gira come Routine cloud (claude.ai/code/routines) —
+il caso normale per questo progetto**: il gate è l'**ambiente della routine**,
+configurato nella UI web, **non un file del repo**. Nessun agente — né
+interattivo né la routine stessa — può scriverlo: **è un passo manuale che
+tocca all'utente**. Dillo esplicitamente e chiaramente: *"Ho aggiunto
+`<azienda>` con dominio `<dominio>`. Per farla funzionare nella routine
+cloud devi aggiungerlo tu su claude.ai/code/routines → apri la routine → Edit
+→ icona ambiente → Network access → Custom → Allowed domains → aggiungi
+`<dominio>` → salva."* Non dare per scontato che l'utente lo sappia o lo
+ricordi da un'aggiunta precedente.
 
-- Estrai il/i dominio/i effettivamente contattati dall'adapter: l'host di
-  `list_endpoint`, di `count_endpoint` se diverso, di `list_url` (html_list), e
-  di `careers_url` se diverso dagli altri (necessario per `json_api` con
-  `endpoint_stability: build_dependent`, che deve rileggere l'HTML della pagina
-  per risolvere il `buildId` a ogni run).
-- Aggiungi ogni dominio nuovo a `sandbox.network.allowedDomains` in
-  `.claude/settings.json` (merge con l'elenco esistente, senza duplicati).
-  Tier C non richiede nulla qui: la routine non lo interroga mai.
-- Mostra questo diff **insieme** a quello di `companies.yaml`, stessa
-  conferma unica (coerente col passo 3 di job-search-profile: modifiche
-  multiple in un'unica richiesta → un solo diff, una sola conferma), e
-  committali nello stesso commit.
+**(b) Se la sessione (interattiva o Desktop scheduled task) gira con il Bash
+sandbox locale attivo**: il gate è `sandbox.network.allowedDomains` in
+`.claude/settings.json` — questo sì versionato nel repo e automatizzabile.
+Aggiungi ogni dominio nuovo (merge con l'elenco esistente, senza duplicati),
+mostra il diff **insieme** a quello di `companies.yaml`, stessa conferma unica
+(coerente col passo 3 di job-search-profile: modifiche multiple in un'unica
+richiesta → un solo diff, una sola conferma), e committali nello stesso
+commit.
+
+Fai **entrambi** i passi quando aggiungi un'azienda tier A/B, salvo che tu
+sappia con certezza che la routine gira solo in uno dei due contesti: costa
+poco fare (b) anche se non serve, mentre dimenticare (a) lascia l'azienda
+bloccata in cloud senza un errore che lo dica chiaramente (il verdetto di
+`fetch_careers.py` lo segnala, ma solo al PROSSIMO run, non subito).
 
 ## Esiti anomali noti
 
