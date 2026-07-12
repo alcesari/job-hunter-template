@@ -81,15 +81,16 @@ conferma**, in sessione fresca (l'ambiente cloud non eredita alcun
    pubblicazione a zero conferme è il **push diretto su `main`**: il flusso
    alternativo PR+auto-merge richiederebbe `gh`, che non è (volutamente)
    allowlistato.
-   **Career page (Fase 1, in attesa del socket test cloud)**: la riga
-   `python[3] scripts/fetch_careers.py` NON è ancora in allowlist —
-   deliberatamente. Il socket test HTTPS è verificato solo su Desktop; finché
-   non passa anche in cloud (procedura in `.docs/analisi/analisi-career-pages-…`,
-   "Stato di prontezza", vincolo 1), il canale career_page resta **Desktop-only**
-   e in cloud la routine gira senza fetch career page (nessuna conferma richiesta
-   perché lo script non viene invocato lì). Quando il test cloud passa, aggiungi
-   `Bash(python scripts/fetch_careers.py *)` e `Bash(python3 scripts/fetch_careers.py *)`
-   all'allowlist (stesso pattern di `send_digest.py`).
+   **Career page (attivata dal 2026-07-12 come test empirico in cloud)**:
+   `Bash(python scripts/fetch_careers.py *)` e
+   `Bash(python3 scripts/fetch_careers.py *)` sono in allowlist (stesso pattern
+   di `send_digest.py`) — la routine invoca lo script a zero conferme anche in
+   cloud, dove il socket test HTTPS non era ancora stato verificato
+   direttamente: lo script stesso, per costruzione, non fallisce mai in modo
+   distruttivo (degradazione elegante per-azienda, exit code 0 anche a rete
+   bloccata), quindi la prima run cloud DOPO questa attivazione È il test —
+   vedi "Fonti dati" punto 3 per l'obbligo di riportare `diagnosis.verdetto`
+   nel digest.
 2. **Hook di enforcement `.claude/hooks/protect-files.sh`** (PreToolUse su
    Edit|Write): nelle sessioni della routine **blocca meccanicamente** ogni
    scrittura su `master-profile.yaml`, `searches/`, `role-fit/`,
@@ -159,14 +160,28 @@ v1 usa i due canali legittimi disponibili oggi (le piattaforme spingono i dati, 
    e aggiorna `last_nonzero_count`. Le soglie (3, 2) sono default di partenza,
    regolabili in Fase 2 sul rumore osservato.
 
-   **Perimetro d'ambiente (stato Fase 1)**: il socket test HTTPS è ✅ **GO su
-   Desktop** (fetch reali verso Greenhouse e gogenerali) ma ⏳ **non ancora
-   eseguito in cloud** (`JOB_HUNTER_ROUTINE=1`), dove SMTP è bloccato e HTTPS
-   *potrebbe* esserlo. Finché il test cloud non passa, il canale career_page è
-   **Desktop-only** e la sua riga di allowlist per `scripts/fetch_careers.py`
-   NON è ancora in `.claude/settings.json` (vedi "Autonomia della run"): la
-   routine cloud continua con aggregatori + canale di candidatura diretta (§3
-   dell'analisi), il fetch career page gira solo nelle run Desktop.
+   **Perimetro d'ambiente (attivazione come test empirico, dal 2026-07-12)**:
+   il socket test HTTPS è ✅ **GO su Desktop** (fetch reali verso Greenhouse e
+   gogenerali) ma **non ancora verificato in cloud** (`JOB_HUNTER_ROUTINE=1`),
+   dove SMTP è bloccato e HTTPS *potrebbe* esserlo. Invece di aspettare una
+   verifica manuale separata, la routine cloud **prova ad usare il canale a
+   ogni run** e quel primo tentativo È il test: `scripts/fetch_careers.py`
+   non fallisce mai in modo distruttivo (try/except per-azienda, exit code 0
+   anche a network completamente bloccato — vedi il campo `status` per
+   azienda nel suo output), quindi un blocco dell'egress cloud **degrada,
+   non rompe** la run. Il suo output include un campo `diagnosis` che
+   distingue un fallimento isolato (una fonte rotta) da un pattern sistemico
+   (stesso errore di rete su tutte le aziende → verosimile blocco
+   dell'ambiente, stessa classe del limite già noto per l'SMTP diretto).
+   **Obbligo per questo passo**: riporta SEMPRE il campo `diagnosis.verdetto`
+   nella sezione anomalie del digest (vedi `references/digest-schema.md`),
+   testuale, senza riassumerlo — è pensato per essere letto a colpo d'occhio
+   senza dover interpretare i singoli errori per-azienda. Se il verdetto è
+   "BLOCCO AMBIENTALE PROBABILE" per 2-3 run consecutivi, segnalalo come
+   anomalia persistente (stessa soglia di `consecutive_failures ≥ 3` sopra):
+   a quel punto è un segnale abbastanza solido da giustificare la disattivazione
+   manuale del canale in cloud (`attiva: false` sulle aziende, o rimozione
+   della riga di allowlist), decisione che resta però umana, non automatica.
 
 Il modulo-fonte è deliberatamente isolato: aggiungere aggregatori legittimi
 (Adzuna, Jooble, career-site Greenhouse/Lever) o — accettandone i trade-off —

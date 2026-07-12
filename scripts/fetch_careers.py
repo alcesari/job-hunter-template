@@ -731,6 +731,60 @@ def run(companies, limit, only):
     return results
 
 
+NETWORK_EXC = (
+    "URLError", "HTTPError", "ConnectionResetError", "ConnectionRefusedError",
+    "ConnectionAbortedError", "TimeoutError", "socket.timeout", "gaierror",
+    "SSLError", "SSLCertVerificationError", "OSError",
+)
+
+
+def _exc_type(reason):
+    """Estrae il nome dell'eccezione dal `reason` ('TipoErrore: messaggio')."""
+    return (reason or "").split(":", 1)[0].strip()
+
+
+def diagnose(results):
+    """Verdetto aggregato leggibile a colpo d'occhio (per la sezione 'Anomalie'
+    del digest): distingue un fallimento isolato (una fonte rotta) da un
+    pattern sistemico (probabile blocco dell'egress HTTPS nell'ambiente —
+    stessa classe di problema già vista con l'SMTP diretto in cloud, vedi
+    send_digest.py). NON decide nulla da sola: è un aiuto alla lettura, la
+    routine resta libera di interpretare diversamente se ha altro contesto.
+    """
+    attempted = [r for r in results if r["status"] in ("ok", "empty", "error")]
+    errors = [r for r in attempted if r["status"] == "error"]
+    if not attempted:
+        return {"verdetto": "nessuna azienda idonea interrogata in questo run"}
+    if not errors:
+        return {"verdetto": "nessun errore — canale career_page operativo"}
+    exc_types = [_exc_type(r["reason"]) for r in errors]
+    from collections import Counter
+    counts = Counter(exc_types)
+    top_exc, top_n = counts.most_common(1)[0]
+    is_network = any(n in top_exc for n in NETWORK_EXC)
+    if len(attempted) < 2:
+        verdetto = ("campione insufficiente (1 sola azienda idonea in questo run) "
+                    "per distinguere un blocco ambientale da un problema isolato")
+    elif top_n == len(attempted) and is_network:
+        verdetto = (f"BLOCCO AMBIENTALE PROBABILE: tutte le {len(attempted)} aziende "
+                    f"interrogate falliscono con lo stesso errore di rete ({top_exc}) — "
+                    "pattern coerente con un egress HTTPS bloccato nell'ambiente "
+                    "(stessa classe di limite già osservata per l'SMTP diretto), "
+                    "non con un endpoint rotto isolato. Segnala esplicitamente nel "
+                    "digest, sezione anomalie: il canale career_page resta "
+                    "verosimilmente Desktop-only finché non risolto.")
+    elif top_n >= max(2, len(attempted) // 2) and is_network:
+        verdetto = (f"possibile blocco parziale: {top_n}/{len(attempted)} aziende "
+                    f"falliscono con lo stesso errore di rete ({top_exc}) — non "
+                    "conclusivo, ma da segnalare nel digest per un secondo run di conferma.")
+    else:
+        verdetto = (f"fallimenti isolati ({len(errors)}/{len(attempted)}), errori "
+                    f"eterogenei o non di rete (più frequente: {top_exc} x{top_n}) — "
+                    "probabile problema per-azienda (endpoint cambiato), non ambientale.")
+    return {"verdetto": verdetto, "errori_per_tipo": dict(counts),
+            "aziende_in_errore": [r["id"] for r in errors]}
+
+
 def main():
     ap = argparse.ArgumentParser(description="Fetch career page → JSON normalizzato")
     ap.add_argument("companies", nargs="?", default="searches/companies.yaml")
@@ -770,6 +824,7 @@ def main():
     print(json.dumps({
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "summary": summary,
+        "diagnosis": diagnose(results),
         "companies": results,
     }, ensure_ascii=False, indent=2))
     return EXIT_OK
