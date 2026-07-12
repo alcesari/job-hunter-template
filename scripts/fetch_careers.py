@@ -762,17 +762,37 @@ def diagnose(results):
     counts = Counter(exc_types)
     top_exc, top_n = counts.most_common(1)[0]
     is_network = any(n in top_exc for n in NETWORK_EXC)
+    # Firma specifica del blocco per-dominio del sandbox Claude Code (distinto
+    # da un generico errore di rete: timeout/DNS non sono "il dominio manca
+    # dall'allowlist", sono guasti diversi con rimedi diversi). Riconosciuta
+    # empiricamente il 2026-07-12 (v. companies.yaml, tutte e 5 le aziende).
+    sandbox_signature = sum(
+        1 for r in errors
+        if "tunnel connection failed" in (r.get("reason") or "").lower()
+        and "403" in (r.get("reason") or "")
+    )
     if len(attempted) < 2:
         verdetto = ("campione insufficiente (1 sola azienda idonea in questo run) "
                     "per distinguere un blocco ambientale da un problema isolato")
+    elif sandbox_signature == len(errors) and sandbox_signature >= 1:
+        verdetto = (f"BLOCCO SANDBOX PER DOMINIO (firma nota): {sandbox_signature} "
+                    "aziende falliscono con 'Tunnel connection failed: 403 Forbidden' — "
+                    "è la firma specifica del proxy di rete del sandbox Claude Code che "
+                    "nega un dominio non presente in sandbox.network.allowedDomains "
+                    "(.claude/settings.json), NON un endpoint rotto. Rimedio: verifica "
+                    "che i domini delle aziende in errore siano in quella lista (il "
+                    "runbook di aggiunta azienda — job-search-profile, Passo 6-bis — "
+                    "dovrebbe averli già aggiunti: se mancano, è un'azienda aggiunta "
+                    "senza quel passo).")
     elif top_n == len(attempted) and is_network:
         verdetto = (f"BLOCCO AMBIENTALE PROBABILE: tutte le {len(attempted)} aziende "
                     f"interrogate falliscono con lo stesso errore di rete ({top_exc}) — "
-                    "pattern coerente con un egress HTTPS bloccato nell'ambiente "
-                    "(stessa classe di limite già osservata per l'SMTP diretto), "
-                    "non con un endpoint rotto isolato. Segnala esplicitamente nel "
-                    "digest, sezione anomalie: il canale career_page resta "
-                    "verosimilmente Desktop-only finché non risolto.")
+                    "pattern coerente con un egress HTTPS bloccato nell'ambiente, "
+                    "non con un endpoint rotto isolato, ma SENZA la firma nota del "
+                    "blocco per-dominio del sandbox (altrimenti sarebbe il caso sopra) — "
+                    "verifica comunque sandbox.network.allowedDomains per primo, poi "
+                    "considera altre cause (rete generale, DNS). Segnala esplicitamente "
+                    "nel digest, sezione anomalie.")
     elif top_n >= max(2, len(attempted) // 2) and is_network:
         verdetto = (f"possibile blocco parziale: {top_n}/{len(attempted)} aziende "
                     f"falliscono con lo stesso errore di rete ({top_exc}) — non "
