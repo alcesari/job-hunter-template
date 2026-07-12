@@ -90,16 +90,29 @@ conferma**, in sessione fresca (l'ambiente cloud non eredita alcun
    bloccata), quindi la prima run cloud DOPO questa attivazione È stata anche
    il test — vedi "Fonti dati" punto 3 per l'obbligo di riportare
    `diagnosis.verdetto` nel digest.
-   **Secondo gate, indipendente dal primo (incidente reale del 2026-07-12)**:
-   l'allowlist sopra autorizza il *comando*, ma il sandbox di Claude Code
-   applica ANCHE un blocco per-dominio (`sandbox.network.allowedDomains` in
-   `.claude/settings.json`) — un dominio non presente lì viene negato
+   **Secondo gate, indipendente dal primo (incidente reale del 2026-07-12,
+   diagnosticato e CORRETTO in due tempi)**: l'allowlist sopra autorizza il
+   *comando*, ma esiste ANCHE un blocco di rete per-dominio, negato
    automaticamente in un run non presidiato (`Tunnel connection failed: 403
-   Forbidden`), a prescindere dal comando permesso. La lista dei domini
-   allowlistati deve restare in sincronia con i domini effettivamente
-   contattati dagli adapter in `searches/companies.yaml`: è `job-search-profile`
-   (runbook di probe, Passo 6-bis) a tenerli allineati quando aggiunge
-   un'azienda tier A/B — non la routine, che non scrive `.claude/settings.json`.
+   Forbidden`) — indipendente dal comando permesso. **Questo secondo gate vive
+   in DUE posti diversi a seconda di dove gira lo script, non uno solo**
+   (primo errore: avevamo corretto solo il secondo):
+   - **Routine cloud (questo caso — claude.ai/code/routines)**: il gate è
+     l'**ambiente della routine** (Network access), configurato nella UI web
+     della routine, editando → icona ambiente → Network access → **Custom** →
+     **Allowed domains**. **Non è un file del repo**: nessun agente, né
+     interattivo né la routine stessa, può scriverlo — è un passo manuale
+     dell'utente su claude.ai, ogni volta che si aggiunge un'azienda tier A/B.
+   - **Sessione Desktop/locale col Bash sandbox attivo**: il gate è
+     `sandbox.network.allowedDomains` in `.claude/settings.json` — quello sì
+     versionato nel repo, e `job-search-profile` (runbook di probe, Passo
+     6-bis) lo tiene sincronizzato quando aggiunge un'azienda.
+
+   La lista dei domini deve restare in sincronia con quelli effettivamente
+   contattati dagli adapter in `searches/companies.yaml` **in entrambi i
+   posti**, ma solo il secondo è automatizzabile da un agente — il primo va
+   ricordato esplicitamente all'utente ogni volta (il runbook lo fa, Passo
+   6-bis).
 2. **Hook di enforcement `.claude/hooks/protect-files.sh`** (PreToolUse su
    Edit|Write): nelle sessioni della routine **blocca meccanicamente** ogni
    scrittura su `master-profile.yaml`, `searches/`, `role-fit/`,

@@ -775,24 +775,31 @@ def diagnose(results):
         verdetto = ("campione insufficiente (1 sola azienda idonea in questo run) "
                     "per distinguere un blocco ambientale da un problema isolato")
     elif sandbox_signature == len(errors) and sandbox_signature >= 1:
-        verdetto = (f"BLOCCO SANDBOX PER DOMINIO (firma nota): {sandbox_signature} "
-                    "aziende falliscono con 'Tunnel connection failed: 403 Forbidden' — "
-                    "è la firma specifica del proxy di rete del sandbox Claude Code che "
-                    "nega un dominio non presente in sandbox.network.allowedDomains "
-                    "(.claude/settings.json), NON un endpoint rotto. Rimedio: verifica "
-                    "che i domini delle aziende in errore siano in quella lista (il "
-                    "runbook di aggiunta azienda — job-search-profile, Passo 6-bis — "
-                    "dovrebbe averli già aggiunti: se mancano, è un'azienda aggiunta "
-                    "senza quel passo).")
+        verdetto = (f"BLOCCO RETE PER DOMINIO (firma nota): {sandbox_signature} aziende "
+                    "falliscono con 'Tunnel connection failed: 403 Forbidden' — è la "
+                    "firma di un proxy che nega un dominio non allowlistato, NON un "
+                    "endpoint rotto. Rimedio dipende da DOVE gira questo script: "
+                    "(1) Routine cloud (claude.ai/code/routines) → il gate è "
+                    "l'ambiente della routine, Network access, NON un file del repo: "
+                    "apri la routine → Edit → icona ambiente → Network access → Custom "
+                    "→ Allowed domains, e verifica che i domini delle aziende in errore "
+                    "ci siano (si aggiungono SOLO da lì, nessun agente può farlo dal "
+                    "repo — vedi job-watch/SKILL.md, sezione 'Fonti dati'); (2) sessione "
+                    "Desktop/locale col Bash sandbox attivo → il gate è "
+                    "sandbox.network.allowedDomains in .claude/settings.json (quello sì "
+                    "lo tiene sincronizzato job-search-profile, Passo 6-bis del runbook "
+                    "aggiunta azienda). Sono due meccanismi diversi con lo stesso nome "
+                    "concettuale: non dare per scontato quale dei due si applica.")
     elif top_n == len(attempted) and is_network:
         verdetto = (f"BLOCCO AMBIENTALE PROBABILE: tutte le {len(attempted)} aziende "
                     f"interrogate falliscono con lo stesso errore di rete ({top_exc}) — "
                     "pattern coerente con un egress HTTPS bloccato nell'ambiente, "
                     "non con un endpoint rotto isolato, ma SENZA la firma nota del "
-                    "blocco per-dominio del sandbox (altrimenti sarebbe il caso sopra) — "
-                    "verifica comunque sandbox.network.allowedDomains per primo, poi "
-                    "considera altre cause (rete generale, DNS). Segnala esplicitamente "
-                    "nel digest, sezione anomalie.")
+                    "blocco per-dominio (altrimenti sarebbe il caso sopra) — verifica "
+                    "comunque la policy di rete dell'ambiente per prima cosa (Routine "
+                    "cloud: Network access nell'ambiente su claude.ai; locale: "
+                    "sandbox.network.allowedDomains), poi considera altre cause (rete "
+                    "generale, DNS). Segnala esplicitamente nel digest, sezione anomalie.")
     elif top_n >= max(2, len(attempted) // 2) and is_network:
         verdetto = (f"possibile blocco parziale: {top_n}/{len(attempted)} aziende "
                     f"falliscono con lo stesso errore di rete ({top_exc}) — non "
