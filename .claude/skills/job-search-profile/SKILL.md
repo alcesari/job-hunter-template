@@ -29,7 +29,7 @@ A differenza delle altre skill dello Studio, qui il gate non è un singolo boole
 
 ## Cosa fa / cosa NON fa
 
-- FA: legge `searches/` dal repo, applica modifiche puntuali richieste dall'utente (ruoli, location, seniority, esclusioni, settori, lingue annuncio, fonti, parametri esecuzione), distinguendo se toccano i `defaults` condivisi o un singolo intento; gestisce il ciclo di vita degli intenti (crea, pausa, archivia); riscrive i file e committa.
+- FA: legge `searches/` dal repo, applica modifiche puntuali richieste dall'utente (ruoli, location, seniority, esclusioni, settori, lingue annuncio, fonti, parametri esecuzione, anagrafica aziende in `searches/companies.yaml`), distinguendo se toccano i `defaults` condivisi o un singolo intento; gestisce il ciclo di vita degli intenti (crea, pausa, archivia); riscrive i file e committa.
 - NON FA: creare il PRIMO profilo da zero quando `searches/` non esiste ancora e non c'è master-profile (se il sistema è vergine → redirect ad `agent-config`); modificare `master-profile.yaml` (chi è l'utente, non cosa cerca); inventare campi fuori schema; rifare l'intervista di onboarding.
 
 ## Schema di riferimento (contratto)
@@ -70,6 +70,21 @@ Esempi di mappatura:
 - "non voglio più annunci in spagnolo" → `lingue_annuncio` — stessa domanda defaults vs override (chiedi anche: escluso se prevalente, se obbligatorio, o entrambi?)
 - "cerca anche Data Platform Engineer" → `ruoli_target` dell'intento (nuovo titolo o sinonimo di uno esistente? Chiedi se ambiguo)
 - "alza il cap ad annunci più recenti" → `parametri_esecuzione` — defaults vs override
+- "aggiungimi Generali tra le aziende che seguo" → `searches/companies.yaml` —
+  esegui SEMPRE il runbook di probe (references/company-probe-runbook.md):
+  discovery del careers vero (chiedi QUALE entità se è un gruppo),
+  classificazione A/B/C, verifica robots, compila la voce con adapter e
+  `robots_ok: si` SOLO se la verifica è stata fatta davvero in questa
+  conversazione. Mostra la classificazione ottenuta nel diff prima di
+  scrivere. Se l'esito è C, dillo: la routine non la leggerà, resterà
+  tracciata e candidabile via link diretto. Non esiste una scorciatoia "salta
+  la probe": se per qualunque motivo non riesci a completarla (tool non
+  disponibili, sito non raggiungibile), scrivi comunque la voce ma con
+  `robots_ok: da_verificare` — MAI `si` senza verifica reale — e dillo
+  all'utente esplicitamente ("non sono riuscito a verificare X, l'azienda
+  resta tracciata ma non verrà interrogata finché non la riverifico").
+- "togli/sospendi Generali" → `attiva: false` nella voce (congela, non
+  cancella — stessa semantica di stato:pausa).
 
 Se la richiesta è vaga ("migliora il profilo", "sistemalo"): mostra i valori attuali raggruppati (defaults + intento/i) e chiedi cosa cambiare — non proporre modifiche di tua iniziativa.
 

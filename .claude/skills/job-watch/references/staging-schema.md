@@ -38,10 +38,31 @@ promozione è un rename/spostamento senza rimappare identità.
   revisione umana lo porta a `approved` (subito prima della promozione) o
   `discarded`. La routine crea solo `pending` e non tocca mai gli altri stati.
 - `company`, `role`, `location`.
-- `source: indeed | linkedin_alert | indeed_alert | manuale` — la fonte che
-  l'ha portata (enum unico condiviso con `role-fit` e `applications/`; la
-  routine scrive solo i primi tre, `manuale` esiste per l'enum condiviso ma
-  non è mai prodotto in staging). Copiato 1:1 alla promozione, mai rimappato.
+- `source: indeed | linkedin_alert | indeed_alert | career_page | manuale` —
+  proiezione di `sources[0].fonte` (retro-compatibilità: i consumatori esistenti
+  continuano a leggere questo scalare; enum condiviso con `role-fit` e
+  `applications/`, `manuale` mai prodotto in staging). Copiato 1:1 alla
+  promozione, mai rimappato.
+- `position_id` — identità della POSIZIONE reale (non dell'annuncio-su-fonte):
+  `<slug(azienda)>:<slug(titolo)>:<slug(location)>` = l'`annuncio_id` senza il
+  prefisso fonte. Raggruppa 1..N fonti quando l'entity resolution fonde.
+- `sources[]` — lista delle fonti che riportano questa posizione. Ogni voce:
+  `fonte` (stesso enum di `source`), `annuncio_id` (quello per-fonte di
+  state.json/source-log — MAI perso), `jd` (URL annuncio), `apply_url` (URL di
+  candidatura su quella fonte), `fetched_at` (ISO 8601); per `career_page`
+  anche `company_slug` (id in companies.yaml) e `native_id` (id nativo della
+  piattaforma, se esposto — es. il contestId di gogenerali). Caso mono-fonte:
+  un solo elemento.
+- `primary_source` — la fonte da cui viene il corpo usato per la valutazione
+  (merge policy: descrizione più ricca vince; euristica career_page > indeed >
+  alert).
+- `preferred_apply_channel` — il canale di candidatura consigliato
+  (career_page > sito aziendale > aggregatore). Ereditato da
+  application-tracker alla promozione; cv-tailoring prepara i materiali per
+  QUEL canale. La candidatura resta un atto umano (D3).
+- `possible_duplicate_of` — valorizzato (con un `position_id`) solo se il
+  matcher di fusione ha esito `suspect`: segnala alla revisione umana un
+  possibile duplicato NON fuso automaticamente.
 - `intent_id` — l'intento che l'ha trovata (viaggia fino ad `applications/`).
 - `annuncio_id` — id/URL canonico (lo stesso di `state.json` e del source-log).
 - `links` — `jd` (URL annuncio).
@@ -94,6 +115,10 @@ la promozione sposta la cartella senza rimappare nulla.
 
 ## Invarianti
 
+- La fusione cross-fonte non genera mai testo nuovo: ogni campo del record
+  fuso è riconducibile a UNA fonte precisa (attribuzione, mai sintesi).
+- `sources[].annuncio_id` restano le chiavi per-fonte di state.json/source-log:
+  la fusione vive solo qui, mai a monte.
 - La routine crea solo `pending`; non promuove, non scarta, non riapre.
 - Una voce promossa non torna in staging (vive in `applications/`).
 - `staging/` si può svuotare senza perdere verità (le offerte viste
