@@ -81,6 +81,15 @@ conferma**, in sessione fresca (l'ambiente cloud non eredita alcun
    pubblicazione a zero conferme è il **push diretto su `main`**: il flusso
    alternativo PR+auto-merge richiederebbe `gh`, che non è (volutamente)
    allowlistato.
+   **Career page (Fase 1, in attesa del socket test cloud)**: la riga
+   `python[3] scripts/fetch_careers.py` NON è ancora in allowlist —
+   deliberatamente. Il socket test HTTPS è verificato solo su Desktop; finché
+   non passa anche in cloud (procedura in `.docs/analisi/analisi-career-pages-…`,
+   "Stato di prontezza", vincolo 1), il canale career_page resta **Desktop-only**
+   e in cloud la routine gira senza fetch career page (nessuna conferma richiesta
+   perché lo script non viene invocato lì). Quando il test cloud passa, aggiungi
+   `Bash(python scripts/fetch_careers.py *)` e `Bash(python3 scripts/fetch_careers.py *)`
+   all'allowlist (stesso pattern di `send_digest.py`).
 2. **Hook di enforcement `.claude/hooks/protect-files.sh`** (PreToolUse su
    Edit|Write): nelle sessioni della routine **blocca meccanicamente** ogni
    scrittura su `master-profile.yaml`, `searches/`, `role-fit/`,
@@ -122,6 +131,42 @@ v1 usa i due canali legittimi disponibili oggi (le piattaforme spingono i dati, 
    quella (`label:<id>` — risolvi il nome → ID con `list_labels`), con
    fallback sui mittenti se il file manca o il campo è vuoto. Non restringere
    mai la query alla sola Inbox (`in:inbox` escluderebbe gli archiviati).
+3. **Career page aziendali** — per ogni azienda in `searches/companies.yaml`
+   con `attiva: true`, `access_tier: A|B` e `robots_ok: si` (STRETTO: `no` e
+   `da_verificare` sono equivalenti, entrambi NON interrogati — vedi contratto
+   companies.yaml): una GET/POST del feed/endpoint registrato nell'`adapter`
+   (contratto in `agent-config/references/search-profile.schema.yaml`,
+   sezione companies). Prima di interrogare, verifica la completezza dei campi
+   obbligatori per il `kind` dichiarato e la coerenza `access_tier`↔`kind`:
+   voce incompleta o incoerente → scarta, segnala nel digest ("voce
+   companies.yaml incompleta/incoerente per `<id>`"), non fallire l'intera run.
+   Fascia C o `robots_ok` non `si`: NON interrogare — conta le aziende saltate
+   e segnalale nel digest ("N aziende richiedono check manuale/verifica").
+   Il fetch strutturato lo fa `python scripts/fetch_careers.py` (stdlib
+   `urllib`, exit code semantici non-fatali come `send_digest.py`): la routine
+   passa `searches/companies.yaml` e riceve JSON normalizzato su stdout, mai
+   fa fallire la run per un feed rotto.
+
+   **Distinzione errore vs zero-risultati** (stato in `state.json.
+   career_page_health.<id>`, non in companies.yaml — è telemetria, non
+   criterio di ricerca): errore HTTP/timeout/JSON non parsabile →
+   `consecutive_failures += 1`, nota nel digest solo se ≥ 3 consecutivi;
+   successo con lista vuota → NON è un errore, confronta con
+   `last_nonzero_count`: se l'azienda aveva posizioni ed è a zero da ≥ 2 run
+   consecutivi, nota soft nel digest ("possibile 0 legittimo o adapter da
+   ri-verificare"); sotto soglia in entrambi i casi, registra silenziosamente
+   e riprova al run successivo. Successo con risultati → azzera i contatori
+   e aggiorna `last_nonzero_count`. Le soglie (3, 2) sono default di partenza,
+   regolabili in Fase 2 sul rumore osservato.
+
+   **Perimetro d'ambiente (stato Fase 1)**: il socket test HTTPS è ✅ **GO su
+   Desktop** (fetch reali verso Greenhouse e gogenerali) ma ⏳ **non ancora
+   eseguito in cloud** (`JOB_HUNTER_ROUTINE=1`), dove SMTP è bloccato e HTTPS
+   *potrebbe* esserlo. Finché il test cloud non passa, il canale career_page è
+   **Desktop-only** e la sua riga di allowlist per `scripts/fetch_careers.py`
+   NON è ancora in `.claude/settings.json` (vedi "Autonomia della run"): la
+   routine cloud continua con aggregatori + canale di candidatura diretta (§3
+   dell'analisi), il fetch career page gira solo nelle run Desktop.
 
 Il modulo-fonte è deliberatamente isolato: aggiungere aggregatori legittimi
 (Adzuna, Jooble, career-site Greenhouse/Lever) o — accettandone i trade-off —
@@ -219,12 +264,52 @@ usando i valori effettivi dell'intento (defaults + override): esclusioni titoli
 (`esito: scartato_livello`), tipo contratto, lingue dell'annuncio
 (`esito: scartato_lingua`). `eccezione_se_ambiguo: true` → non scartare, segnala.
 
+**Filtro location — SOLO per `fonte: career_page`.** Gli altri canali hanno la
+location già nella query a monte (Indeed cerca per ruolo × location, gli alert
+sono configurati per location): lì NON si applica questo filtro. Il canale
+career_page invece fetcha **per-azienda**, non per-location, quindi riceve tutte
+le posizioni globali dell'azienda (verificato: SimCorp/Bending Spoons
+restituiscono Manila, Copenhagen, London, Hong Kong… mischiate alle italiane) —
+serve un filtro esplicito. Confronta la location normalizzata dell'offerta con
+le `location_target` dell'intento usando la **stessa tabella di alias IT/EU**
+del matcher (`references/entity-resolution.md`, sezione "Tabella alias
+location") — non inventarne una seconda. Regole:
+- un **token remote** (`remote`/`remoto`/`smart-working`/…) è compatibile con
+  qualsiasi `location_target` che dichiari `accetta_remoto: true`;
+- una città è compatibile se uguale a un target o inclusa in una sua
+  regione/paese secondo la tabella;
+- se la location dell'offerta **elenca più sedi** (es. "Milan (Italy), Madrid
+  (Spain), Warsaw (Poland)"), basta che **UNA** sia compatibile per tenerla.
+
+Offerta la cui location non è compatibile con NESSUNA `location_target`
+dell'intento (e non è un token remote accettato) → `esito: scartato_location`
+(nuovo esito, vedi `job-alert-tuner/references/source-log-schema.md`).
+**Location assente/non estratta** (es. una posizione html_list il cui detail
+non espone la sede — Arkemis in Fase 1 — o un adapter senza campo location):
+**NON scartare** — l'assenza del dato non è prova di fuori-scope; l'offerta
+prosegue e sarà la valutazione di fit a pesarla (stessa conservatività del
+matcher). Non applicare MAI questo filtro a indeed/linkedin_alert/indeed_alert.
+
 ### 5. Valutazione del fit (output in staging, MAI in role-fit/)
 Sulle sopravvissute, fino a `max_annunci_per_esecuzione`, valuta il fit contro
 il `master-profile` con lo **stile e lo schema di `role-fit`** (bullet pesati,
 score ordinale `forte|buono|parziale|debole`, niente numeri). L'output va in
 `staging/`, non in `role-fit/` (regola di proprietà): sarà la promozione umana a
 persisterlo in `role-fit/`. Le offerte oltre il cap: log `non_lavorato_cap`.
+
+### 5-bis. Fusione cross-fonte (entity resolution, solo intra-run)
+Sulle offerte sopravvissute, riconosci quelle che sono la STESSA posizione
+vista da fonti diverse. **Contratto operativo completo** (matrice di decisione,
+soglie `token_set_ratio` 0.90/0.75, lista suffissi societari, suffissi titolo,
+tabella alias location, merge policy) in `references/entity-resolution.md`: gate
+rigido sull'azienda, location compatibile, similarità titolo. **Location assente
+(null) su un lato → mai `merge`** (al più `suspect`, di norma `distinct`):
+l'assenza di dato non è prova di identità — stessa conservatività del gate.
+Esiti: `merge` (un solo record staging con `sources[]` multiplo e merge
+per-campo), `suspect` (record separati + `possible_duplicate_of`), `distinct`.
+La fusione avviene DOPO il source-log (che resta una riga per fonte — è ciò che
+rende misurabile il cross-source overlap nel tuner) e non tocca MAI
+state.json/annuncio_id.
 
 ### 6. Gate + pre-generazione materiali
 Per ogni offerta valutata crea/aggiorna `staging/<id>/` col contratto in
@@ -246,6 +331,8 @@ Appendi TUTTE le righe osservate (incluse scarti e dedup) a
 nel repo unico la coerenza run↔log è quasi-atomica. Se la scrittura del
 source-log fallisce ma il resto è andato: non bloccare digest/stato, segnala
 l'anomalia nel digest (il log è telemetria, la pipeline è il prodotto).
+Le righe da fonte career_page portano anche `azienda_fonte` (contratto
+source-log). La fusione NON riduce le righe: un annuncio per fonte, sempre.
 
 ### 8. Digest (contratto in references/digest-schema.md)
 Componi il digest (vedi contratto): offerte nuove valutate, cosa è in staging in
