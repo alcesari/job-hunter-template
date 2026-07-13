@@ -13,7 +13,9 @@ scarto.
 - **Legge / consuma**: la revisione umana in sessione interattiva. Approvazione →
   `application-tracker` promuove in `applications/`; scarto → si archivia.
 - La routine può **riscrivere** una voce staging esistente a run successive (es.
-  rivalutazione), MAI una già promossa (una volta in `applications/`, esce da qui).
+  rivalutazione, o fusione cross-run di una fonte nuova trovata su un'altra
+  piattaforma per la stessa posizione — vedi `references/entity-resolution.md`),
+  MAI una già promossa (una volta in `applications/`, esce da qui).
 
 ## Struttura
 
@@ -45,7 +47,10 @@ promozione è un rename/spostamento senza rimappare identità.
   promozione, mai rimappato.
 - `position_id` — identità della POSIZIONE reale (non dell'annuncio-su-fonte):
   `<slug(azienda)>:<slug(titolo)>:<slug(location)>` = l'`annuncio_id` senza il
-  prefisso fonte. Raggruppa 1..N fonti quando l'entity resolution fonde.
+  prefisso fonte. Raggruppa 1..N fonti quando l'entity resolution fonde, sia
+  nella stessa run sia a run successive (fusione cross-run, vedi
+  `references/entity-resolution.md`): `sources[]` può quindi crescere anche
+  dopo la creazione della voce, non solo alla creazione.
 - `sources[]` — lista delle fonti che riportano questa posizione. Ogni voce:
   `fonte` (stesso enum di `source`), `annuncio_id` (quello per-fonte di
   state.json/source-log — MAI perso), `jd` (URL annuncio), `apply_url` (URL di

@@ -26,9 +26,45 @@ gate rigido, tre esiti, conservatività) è la parte non negoziabile.
 Quindi: fondi solo con evidenza forte; nel dubbio lascia separato e, al più,
 segnala `suspect` per la revisione umana.
 
-## Algoritmo (a soglie, niente ML) — solo tra annunci della STESSA run
+## Ambito di applicazione: intra-run e cross-run
 
-Un candidato-match tra due annunci si valuta in quest'ordine:
+L'algoritmo sotto è lo STESSO in entrambi i casi (stesse soglie, stesso gate,
+stessa tabella alias) — cambia solo il **pool di candidati** con cui si
+confronta un'offerta sopravvissuta:
+
+- **Intra-run**: il pool sono le altre offerte sopravvissute della stessa run
+  (caso originale — es. la stessa posizione trovata su Indeed e career_page
+  nello stesso giro).
+- **Cross-run**: il pool sono anche il `position_id` (+ azienda/titolo/
+  location) delle voci `staging/*/staging.yaml` con `status: pending` di run
+  **precedenti**, e delle voci `applications/*/application.yaml` (qualunque
+  stato). Copre il caso — verificato utile: un'azienda trovata oggi via
+  career_page, la cui stessa posizione ricompare su LinkedIn/Indeed due giorni
+  dopo in una run successiva — senza cross-run finirebbe duplicata come
+  seconda voce staging invece di essere riconosciuta come la stessa.
+
+Esiti cross-run:
+- `merge` contro una `pending` esistente → **quella voce riceve la fonte
+  nuova** in append a `sources[]` (mai una seconda cartella staging); si
+  riapplica la merge per-campo (sotto) e si ricalcolano `primary_source`/
+  `preferred_apply_channel` se la fonte vincente cambia.
+- `merge` contro una voce già in `applications/` → **non si crea nulla in
+  staging**: la routine segnala nel digest che una posizione già candidata è
+  ricomparsa su una fonte nuova (con link alla candidatura), per lasciare
+  alla revisione umana la decisione (es. ri-candidarsi su un canale diverso
+  se la prima è stata rifiutata).
+- `suspect` (in entrambi i casi) → si crea/lascia la voce separata con
+  `possible_duplicate_of` valorizzato, stessa logica dell'intra-run.
+
+`sources[].annuncio_id` resta sempre la chiave per-fonte di
+`state.json`/source-log, sia che la fonte sia stata aggiunta alla creazione
+sia a run successive: la fusione cross-run non tocca mai quello strato,
+esattamente come l'intra-run (vedi Invarianti in `staging-schema.md`).
+
+## Algoritmo (a soglie, niente ML)
+
+Un candidato-match tra due annunci (o tra un'offerta e una voce staging/
+application esistente, nel caso cross-run) si valuta in quest'ordine:
 
 1. **Gate azienda (obbligatorio, rigido).** Slug azienda uguale, oppure uguale
    dopo la normalizzazione delle forme societarie (sotto). Azienda diversa →

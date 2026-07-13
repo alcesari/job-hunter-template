@@ -43,7 +43,10 @@ Raggruppate per intento, ordinate per `score` (forte → debole). Per ognuna:
 `Ruolo @ Azienda` · location · **score** · una riga di sintesi (dai bullet del
 fit) · link alla JD. Se i materiali sono pre-generati (fit forte/buono), segnala
 "📄 materiali pronti in staging" col path `staging/<id>/`. Se non ci sono offerte
-nuove, dillo esplicitamente (non è un errore).
+nuove, dillo esplicitamente (non è un errore). Una fusione **cross-run** che ha
+solo aggiunto una fonte a una voce `pending` già esistente (vedi
+`references/entity-resolution.md`) NON conta come offerta nuova qui — va nella
+sezione Anomalie (punto 6).
 
 ### 3. In attesa di revisione (staging `pending`)
 Le voci `staging/*/staging.yaml` con `status: pending`, con l'azione richiesta:
@@ -66,6 +69,15 @@ Conteggio delle candidature per `status` (`da_candidare`/`candidata`/`in_corso`/
 ### 6. Anomalie della run
 Fonti fallite, alert non parsati, righe di source-log malformate, scrittura
 telemetria fallita, ecc. Trasparenza operativa: se qualcosa è degradato, si dice.
+
+**Fusione cross-run (obbligatoria se avvenuta)**: se il passo 5-bis di
+`job-watch/SKILL.md` ha aggiunto una fonte nuova a una voce `staging` `pending`
+già esistente, segnalalo qui (es. "🔗 nuova fonte trovata per `<ruolo> @
+<azienda>`, già in staging da run precedente"). Se invece ha riconosciuto che
+una posizione ricomparsa corrisponde a una candidatura già in `applications/`,
+segnalalo con link alla candidatura (es. "↩️ `<ruolo> @ <azienda>` ricompare su
+una nuova fonte — già candidato il `<data>`, nessuna nuova voce in staging").
+Nessuna delle due va contata tra le "offerte nuove" del punto 2.
 
 **Career page — verdetto di diagnosi (obbligatoria se il canale è attivo)**:
 riporta testualmente il campo `diagnosis.verdetto` dell'output di
