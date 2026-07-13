@@ -380,22 +380,45 @@ score ordinale `forte|buono|parziale|debole`, niente numeri). L'output va in
 `staging/`, non in `role-fit/` (regola di proprietà): sarà la promozione umana a
 persisterlo in `role-fit/`. Le offerte oltre il cap: log `non_lavorato_cap`.
 
-### 5-bis. Fusione cross-fonte (entity resolution, solo intra-run)
+### 5-bis. Fusione cross-fonte (entity resolution, intra-run e cross-run)
 Sulle offerte sopravvissute, riconosci quelle che sono la STESSA posizione
-vista da fonti diverse. **Contratto operativo completo** (matrice di decisione,
-soglie `token_set_ratio` 0.90/0.75, lista suffissi societari, suffissi titolo,
-tabella alias location, merge policy) in `references/entity-resolution.md`: gate
-rigido sull'azienda, location compatibile, similarità titolo. **Location assente
-(null) su un lato → mai `merge`** (al più `suspect`, di norma `distinct`):
-l'assenza di dato non è prova di identità — stessa conservatività del gate.
-Esiti: `merge` (un solo record staging con `sources[]` multiplo e merge
-per-campo), `suspect` (record separati + `possible_duplicate_of`), `distinct`.
-La fusione avviene DOPO il source-log (che resta una riga per fonte — è ciò che
-rende misurabile il cross-source overlap nel tuner) e non tocca MAI
-state.json/annuncio_id.
+vista da fonti diverse — sia nella stessa run (es. Indeed e career_page trovano
+la stessa posizione nello stesso giro) sia in run diverse (es. trovata oggi su
+career_page, la stessa azienda la ripropone su LinkedIn tra due giorni: senza
+il confronto cross-run diventerebbe una seconda voce staging duplicata).
+**Contratto operativo completo** (matrice di decisione, soglie
+`token_set_ratio` 0.90/0.75, lista suffissi societari, suffissi titolo, tabella
+alias location, merge policy, ambito intra-run/cross-run) in
+`references/entity-resolution.md`: gate rigido sull'azienda, location
+compatibile, similarità titolo. **Location assente (null) su un lato → mai
+`merge`** (al più `suspect`, di norma `distinct`): l'assenza di dato non è
+prova di identità — stessa conservatività del gate.
+
+- **Intra-run**: confronto tra le offerte sopravvissute di questa run.
+- **Cross-run**: confronto di ogni offerta sopravvissuta anche contro il
+  `position_id` (+ azienda/titolo/location) delle voci `staging/*/staging.yaml`
+  con `status: pending` di run precedenti, e delle voci
+  `applications/*/application.yaml` (qualunque stato) — stesso algoritmo,
+  stesse soglie.
+
+Esiti: `merge` contro una `pending` esistente → **quella voce riceve la fonte
+nuova** in append a `sources[]` (mai una seconda cartella staging per la stessa
+posizione), con merge per-campo riapplicato; `merge` contro una voce già in
+`applications/` → **non si crea nulla in staging**, si segnala nel digest
+(sezione anomalie) che una posizione già candidata è ricomparsa su una fonte
+nuova, con link alla candidatura; `suspect` (in entrambi gli ambiti) → record
+separato con `possible_duplicate_of` valorizzato, per la revisione umana;
+`distinct` → nessuna annotazione. La fusione avviene DOPO il source-log (che
+resta una riga per fonte — è ciò che rende misurabile il cross-source overlap
+nel tuner) e non tocca MAI state.json/annuncio_id, in nessuno dei due ambiti.
 
 ### 6. Gate + pre-generazione materiali
-Per ogni offerta valutata crea/aggiorna `staging/<id>/` col contratto in
+Per ogni offerta valutata: se il passo 5-bis l'ha fusa **cross-run** con una
+voce `pending` esistente, aggiorna quella voce (`sources[]` + merge per-campo,
+ricalcola `primary_source`/`preferred_apply_channel` se la fonte vincente
+cambia) invece di creare una cartella nuova; se fusa cross-run con una voce già
+in `applications/`, non creare nulla (vedi 5-bis, la si segnala solo nel
+digest). Altrimenti crea/aggiorna `staging/<id>/` col contratto in
 `references/staging-schema.md` (`staging.yaml` + `fit.yaml`). **Gate**: solo per
 i fit `forte` e `buono` **che non siano palesemente sotto il floor RAL**
 dell'aspettativa (rifinitura) pre-genera i materiali (CV + cover + DM) riusando
