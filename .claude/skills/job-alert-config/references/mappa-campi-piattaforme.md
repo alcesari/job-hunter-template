@@ -13,6 +13,33 @@ Mappature dai campi dell'**intento** di ricerca (`searches/<intent-id>.yaml`, pi
 | `parametri_esecuzione.finestra_temporale_ore` | Filtro "Data di pubblicazione" | "Ultime 24 ore" per la ricerca manuale; per l'ALERT non serve (l'alert manda solo annunci nuovi per costruzione). |
 | — | Impostazioni avviso | Frequenza: Giornaliera. Canale: Email (obbligatorio: la routine legge da Gmail). |
 
+### URL pre-filtrato + `geoId` (chiave canonica dell'alert)
+
+Invece di far impostare i filtri a mano, **costruisci l'URL di ricerca già filtrato** e fallo aprire all'utente (poi "Crea avviso"). Template:
+
+```
+https://www.linkedin.com/jobs/search/?keywords=<KEYWORDS>&geoId=<GEOID>[&f_E=<LIVELLI>][&f_WT=<MODALITA>]
+```
+
+- `keywords`: la stessa stringa booleana della barra (URL-encoded), es. `"Backend Developer" OR "Java Developer"`.
+- `geoId`: identificatore area LinkedIn (tabella sotto). È — con `keywords` — la **chiave canonica** `<keywords-slug>:<geoId>` che il registro (`searches/alerts-registry.yaml`) e la routine usano per attribuire gli annunci alla ricerca giusta (vedi `references/alerts-registry.schema.yaml` e `job-watch/SKILL.md`, sezione «Attribuzione alert → ricerca»).
+- `f_E` (livello esperienza): `2`=Entry, `3`=Associate, `4`=Mid-Senior, `5`=Director, `6`=Executive (mappa da `seniority.livello`; `medio` → `3,4`). `f_WT` (modalità): `1`=In sede, `2`=Remoto, `3`=Ibrido.
+- Escludi SEMPRE dalla chiave i parametri **volatili**: `f_TPR`, `trk`, `lipi`, `midToken`, `eid` (cambiano a ogni email/sessione).
+
+| Area (`location_target.area`) | `geoId` | Note |
+|---|---|---|
+| Italia | `103350119` | verificato |
+| Milano | `90009936` | verificato |
+| Unione Europea / Remote EU | `91000000` | verificato ("European Union") |
+| Germania | `101282230` | da doc D.1 |
+| Spagna | `105646813` | da doc D.1 |
+| Paesi Bassi | `102890719` | da doc D.1 |
+| Belgio | `100565514` | da doc D.1 |
+| Francia | `105015875` | da doc D.1 |
+| Regno Unito | `101165590` | da doc D.1 |
+
+Area non in tabella: fai fare all'utente una ricerca su LinkedIn per quell'area e incolla l'URL una volta sola (il `geoId` è nel querystring) → aggiungilo qui.
+
 Note LinkedIn:
 - L'avviso si crea dal toggle "Crea avviso di offerte" che appare sulla pagina dei risultati di ricerca, dopo aver impostato query + filtri.
 - Gli avvisi si gestiscono da "Offerte di lavoro" → "Avvisi offerte di lavoro" (lì si eliminano quelli vecchi dopo una modifica del profilo).

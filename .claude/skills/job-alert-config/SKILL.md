@@ -10,7 +10,9 @@ description: >-
   quando l'utente ha appena modificato il search-profile con
   job-search-profile e gli alert vanno riallineati. Produce istruzioni
   testuali da eseguire a mano (LinkedIn/Indeed sono dietro login: nessuna
-  configurazione programmatica possibile), non file.
+  configurazione programmatica possibile) E scrive il registro degli alert
+  (searches/alerts-registry.yaml) che rende gli annunci attribuibili alla
+  ricerca giusta a valle.
 ---
 
 # job-alert-config
@@ -34,7 +36,7 @@ Prima di derivare alert, verifica il prerequisito minimo di questa skill: la car
 2. **Priorità**: ordina per `location_target.priorita` (alta prima). Le location `accetta_remoto: true` generano anche la variante con filtro "Remoto" attivo dove la piattaforma la gestisce come filtro separato.
 3. **Cap dichiarato, applicato PER INTENTO**: proponi al massimo ~8-10 alert per piattaforma *per ciascun intento*. Se le combinazioni di un intento superano il cap, mostra l'elenco completo ordinato per priorità e chiedi dove tagliare — non tagliare in silenzio. Troppi alert = digest rumoroso e email duplicate; il tuning a posteriori è mestiere di `job-alert-tuner` (1.2.2).
 4. **Fonti disattive**: se in `fonti` di quell'intento una piattaforma è `attiva: false`, salta le sue istruzioni e dillo.
-5. **Nome/attribuzione dell'alert**: dai a ogni alert un nome coerente con la convenzione `ricerca_id` prefissata dall'intento usata nel source-log (es. `data-engineering-eu:linkedin:data engineer:milano`). Gli alert email non sono taggabili alla fonte: è questo naming coerente che, a valle, rende l'annuncio attribuibile all'intento giusto. Includi il nome suggerito accanto a ogni istruzione di alert, così l'utente lo può usare come titolo della ricerca salvata dove la piattaforma lo consente.
+5. **URL pre-filtrato + chiave canonica — inversione del flusso**: invece di far impostare i filtri a mano (fonte di errori "l'utente ha messo un filtro diverso"), **costruisci tu l'URL di ricerca LinkedIn pre-filtrato** (`keywords` + `geoId` + eventuale `f_E`/`f_WT`) e chiedi all'utente solo di aprirlo, verificarlo e cliccare "Crea avviso". Così la **chiave canonica `<keywords-slug>:<geoId>` è nota PRIMA che l'alert esista** → il registro si scrive senza chiedere nulla. La tabella `area → geoId` è in `references/mappa-campi-piattaforme.md`. Il `ricerca_id` dell'alert è `<intent_id>:linkedin_alert:<keywords-slug>:<geoId>` (stessa chiave che la routine ricostruisce dal corpo email — vedi `job-watch/SKILL.md`, sezione «Attribuzione alert → ricerca», e `references/alerts-registry.schema.yaml`).
 
 ## Cosa gli alert NON possono fare (dichiaralo sempre all'utente)
 
@@ -47,7 +49,7 @@ Includi SEMPRE, in testa alle istruzioni, questi due punti:
 1. **Consegna via email ATTIVA** verso la casella Gmail collegata al sistema: la routine legge gli alert da Gmail (`jobs-noreply@linkedin.com`, `alert@indeed.com`). Un alert solo-notifica-app è invisibile al sistema.
 2. **Frequenza giornaliera** (o la più frequente disponibile): la routine lavora su una finestra di `finestra_temporale_ore` ore (default 48) — alert settimanali arriverebbero già vecchi.
 
-## Output (in chat, non file)
+## Output (checklist in chat + registro su file)
 
 Produci una checklist numerata, **raggruppata per intento** e poi per piattaforma (se ci sono più intenti attivi, intitola ogni blocco con `nome`/`id` dell'intento), nello stile:
 
@@ -55,13 +57,29 @@ Produci una checklist numerata, **raggruppata per intento** e poi per piattaform
 INTENTO: data-engineering-eu — "Data Engineering in Europa"
 
 LINKEDIN — alert 1 di N
-Nome ricerca salvata: data-engineering-eu:linkedin:data engineer:milano
-1. Vai su linkedin.com/jobs e cerca: <query>
-2. Località: <location>  [+ filtro Remoto: sì/no]
-3. Filtri consigliati: Livello esperienza = <mappatura seniority>; Data pubblicazione = Ultime 24 ore
-4. Attiva "Crea avviso di offerte" per questa ricerca
-5. Nelle impostazioni dell'avviso: frequenza Giornaliera, canale Email
+Apri questo link (già pre-filtrato) e clicca "Crea avviso":
+  https://www.linkedin.com/jobs/search/?keywords=<keywords>&geoId=<geoId>[&f_E=..&f_WT=..]
+1. Verifica che i filtri corrispondano (keywords, area, livello, remoto)
+2. Clicca "Crea avviso di offerte" per questa ricerca
+3. Nelle impostazioni dell'avviso: frequenza Giornaliera, canale Email
+(ricerca_id = data-engineering-eu:linkedin_alert:<keywords-slug>:<geoId>)
 ```
+
+**Scrittura del registro (`searches/alerts-registry.yaml`)**: per OGNI alert che
+proponi, aggiungi/aggiorna la voce corrispondente nel registro (schema in
+`references/alerts-registry.schema.yaml`) con `ricerca_id`, `intent_id`,
+`keywords`, `geoId`, `area`, `etichetta` leggibile, `stato: attivo`, `creato`.
+Poiché costruisci tu l'URL, keywords+geoId (la chiave) sono noti **prima** che
+l'alert esista: il registro si scrive subito, non serve la conferma dell'utente
+per popolarlo (la conferma serve solo a sapere che l'alert è stato *creato* sulla
+piattaforma). Alla riscrittura del profilo (invocazione post `job-search-profile`):
+metti `stato: da_rimuovere` sulle voci di alert non più coerenti (intento in
+pausa/archiviato, ruolo/location rimossi), non cancellarle a mano — è la traccia
+che il tuner e l'utente usano per sapere cosa disattivare sulla piattaforma.
+**Verifica opzionale (deterministica)**: dopo che l'utente conferma, puoi cercare
+su Gmail le mail di conferma-creazione-alert di LinkedIn e controllare che le
+chiavi canoniche coincidano con quelle scritte nel registro — intercetta subito
+un filtro impostato diverso o un alert saltato.
 
 Le mappature esatte campo-per-campo (nomi dei filtri, sintassi query, mappatura seniority→livelli piattaforma) sono in `references/mappa-campi-piattaforme.md`: leggilo prima di generare le istruzioni. I nomi dei menu delle piattaforme cambiano nel tempo: se l'utente segnala che un campo indicato non esiste più, adatta l'istruzione al concetto (es. "il filtro che limita per data di pubblicazione") invece di insistere sul nome esatto.
 
@@ -69,7 +87,7 @@ Chiudi SEMPRE con: l'elenco riassuntivo degli alert da creare (per spuntarli), e
 
 ## Cosa NON fare
 
-- Non generare config "programmatica" o finti file di configurazione: sono istruzioni per un umano, per costruzione.
+- Non tentare di CREARE gli alert al posto dell'utente (LinkedIn/Indeed sono dietro login): l'impostazione resta manuale. Il file che questa skill scrive è il **registro** (`searches/alerts-registry.yaml`), non una config che crea alert: registra alert che l'utente crea a mano.
 - Non inventare valori mancanti dal profilo (es. seniority assente → ometti il filtro e dillo, non scegliere tu un livello).
 - Non promettere che gli alert filtreranno esclusioni/lingue (vedi sopra).
 - Non dare per impostati gli alert senza conferma esplicita dell'utente.

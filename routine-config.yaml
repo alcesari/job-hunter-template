@@ -10,10 +10,12 @@
 # del search-profile con campi che non un intento può mai voler overridare.
 
 gmail_label: "Job Hunter"
-# Etichetta Gmail da cui la routine legge gli alert LinkedIn/Indeed
-# (risolta a ID via list_labels, poi usata come label:<id> nella query — vedi
-# job-watch/SKILL.md, sezione "Fonti dati"). Se cambi l'etichetta in Gmail,
-# aggiorna questo valore nella stessa sessione: è l'unica copia versionata.
+# Etichetta Gmail da cui la routine legge gli alert LinkedIn/Indeed. È il NOME
+# dell'etichetta, usato direttamente nella query come label:"WORK/Job Hunter"
+# (o label:WORK/Job-Hunter). NON risolverlo a ID via list_labels: l'operatore
+# Gmail label: NON accetta l'ID interno (torna 0 risultati) — vedi la trappola
+# documentata in job-watch/SKILL.md, sezione "Fonti dati". Se cambi l'etichetta
+# in Gmail, aggiorna questo valore nella stessa sessione: è l'unica copia versionata.
 
 cadenza_dichiarata: "1 run/giorno"
 # Default consigliato per iniziare. Da confermare (o rivedere) con
