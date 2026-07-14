@@ -53,7 +53,7 @@ Nota per il futuro (non requisito v1): `applications/<id>/application.yaml` port
 
 1. Una tabella riassuntiva per `ricerca_id` (con la colonna `intento_id`, così si legge anche aggregata per intento): volume medio/run, resa unica %, fuori scope %, note.
 2. Le coppie con overlap rilevante, distinguendo overlap *dentro* lo stesso intento da overlap *tra* intenti diversi.
-3. **2-4 raccomandazioni qualitative**, nello stile del progetto (pesate, non binarie): non "elimina la ricerca X" ma "X porta il 90% di annunci già portati da Y e quasi nulla di unico: candidata alla rimozione — la decisione è tua". Ogni raccomandazione indica anche DOVE si agisce: criteri → `job-search-profile`, alert sulle piattaforme → `job-alert-config`.
+3. **2-4 raccomandazioni qualitative**, nello stile del progetto (pesate, non binarie): non "elimina la ricerca X" ma "X porta il 90% di annunci già portati da Y e quasi nulla di unico: candidata alla rimozione — la decisione è tua". Ogni raccomandazione indica anche DOVE si agisce: criteri → `job-search-profile`, alert sulle piattaforme → `job-alert-config`. **Rendile azionabili**: per le ricerche `linkedin_alert`/`indeed_alert`, risolvi il `ricerca_id` opaco in `searches/alerts-registry.yaml` (se presente) e cita l'**etichetta leggibile** (es. "Integration Engineer — Unione Europea") e, se serve, l'URL/keywords dell'alert reale da disattivare sulla piattaforma — così l'utente sa esattamente quale avviso toccare, non un id criptico.
 4. Le soglie usate (es. "resa unica < 15% = bassa") sono euristiche dichiarate nel testo, mai tagli automatici.
 
 ## Cosa NON fare

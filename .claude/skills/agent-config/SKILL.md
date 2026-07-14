@@ -31,7 +31,7 @@ Prima di qualunque verifica tecnica, invia sempre questo messaggio (adattalo min
 
 ---
 
-Sciaaaaaamn! 🎉 Iniziamo la configurazione del sistema Job Hunter.
+Ciao! 👋 Iniziamo la configurazione del sistema Job Hunter.
 
 Ti spiego prima cosa serve e cosa succederà, così puoi preparare tutto senza interruzioni a metà strada :)
 

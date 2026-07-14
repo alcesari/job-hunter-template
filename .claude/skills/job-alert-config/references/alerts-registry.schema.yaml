@@ -1,0 +1,57 @@
+# alerts-registry — schema dato-agnostico (attribuzione alert → ricerca)
+#
+# Contratto: repo del sistema, file unico `searches/alerts-registry.yaml`.
+# Prodotto/aggiornato da: job-alert-config (1.2.1) quando genera le istruzioni di
+#   alert, e agent-config (1.1) al passo 5. Letto da: job-watch (attribuzione
+#   degli annunci alert al ricerca_id/intento) e job-alert-tuner (etichette
+#   leggibili + azionabilità: "quale alert reale corrisponde a questo ricerca_id").
+# Proprietà (D5): vive in searches/, quindi è di proprietà delle sessioni
+#   interattive; la routine lo LEGGE soltanto (protetto in scrittura dall'hook).
+#
+# PERCHE' ESISTE. Gli alert email non sono taggabili alla fonte e il loro subject
+# porta il titolo del PRIMO annuncio del digest, non il nome dell'avviso: quindi
+# il subject è inutilizzabile per capire da quale ricerca salvata proviene una
+# mail. La definizione dell'avviso vive invece nel CORPO dell'email, nel link di
+# ricerca (`/comm/jobs/search...`): keywords + geoId sono la chiave stabile.
+# Questo registro mappa quella chiave → ricerca_id/intento + un'etichetta umana.
+#
+# MONO-INTENTO OGGI: con un solo intento attivo l'attribuzione all'intento è
+# banale, ma la chiave serve comunque a disambiguare ricerche diverse dello
+# stesso intento (es. stesse keywords, aree diverse) e a rendere il tuner
+# azionabile. Con più intenti diventa l'unico modo per attribuire un alert
+# all'intento giusto quando arrivano tutti dallo stesso mittente Gmail.
+
+schema_version: int                     # versione dello schema (oggi: 1)
+
+alerts:
+  - ricerca_id: string                  # STABILE, identico a quello scritto nel source-log per gli
+                                         #   annunci da questo alert. Convenzione (LinkedIn):
+                                         #   "<intent_id>:linkedin_alert:<keywords-slug>:<geoId>".
+                                         #   keywords-slug = slug del valore `keywords` del link di
+                                         #   ricerca (minuscolo, non-alfanumerici → '-'); geoId = area.
+    intent_id: string                    # intento proprietario (searches/<intent_id>.yaml)
+    piattaforma: enum[linkedin, indeed]  # oggi solo linkedin ha alert email attribuibili via URL
+    etichetta: string                    # leggibile, per il tuner e per l'utente: es. "Backend — Milano"
+    keywords: string                     # valore ESATTO del parametro keywords (con virgolette/OR), per
+                                         #   ricostruire l'URL di ricerca e per il match dal corpo email
+    geoId: string                        # id area LinkedIn (es. Italia=103350119, UE=91000000,
+                                         #   Milano=90009936). Insieme a keywords forma la chiave canonica.
+    area: string                         # nome leggibile dell'area (Italia / Milano / Unione Europea…)
+    stato: enum[attivo, da_rimuovere, rimosso]  # ciclo di vita; il tuner può proporre `da_rimuovere`
+    creato: string                       # YYYY-MM-DD
+
+# NOTE
+# - CHIAVE CANONICA = "<keywords-slug>:<geoId>". Il ricerca_id la prefissa con
+#   l'intento. La routine, letto un alert, calcola questa chiave dal corpo e
+#   cerca la voce con lo stesso (keywords-slug, geoId) → ne prende il ricerca_id.
+# - MATCH TOLLERANTE: il connettore Gmail può restituire un plaintextBody con
+#   artefatti quoted-printable che corrompono le prime cifre del geoId (vedi
+#   job-watch/SKILL.md). Il match può quindi ricadere sul confronto per suffisso
+#   del geoId + keywords; il registro conserva sempre il geoId COMPLETO e pulito.
+# - NON in registro → la routine logga l'annuncio con
+#   `ricerca_id = <intent>:linkedin_alert:unmatched:<chiave>` e segnala l'anomalia
+#   nel digest (l'utente ha creato un alert fuori dal sistema, o le keywords sono
+#   cambiate): non attribuire a forza a una ricerca esistente.
+# - Email che NON sono alert (es. "lavori simili a X", promozioni): non hanno un
+#   link /comm/jobs/search con keywords+geoId → si riconoscono ed escludono, non
+#   si registrano né si attribuiscono.
