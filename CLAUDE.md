@@ -27,7 +27,9 @@ prerequisito manca.
 
 ## Decisioni di design chiuse (D1-D8) — non riaprirle
 - D1 Utente personale-first; condivisione futura è un problema rimandato.
-- D2 Profilo unico con intenti annidati: searches/<intento>.yaml + searches/defaults.yaml.
+- D2 Profilo unico con intenti annidati: searches/<intento>.yaml + searches/defaults.yaml
+  (+ searches/alerts-registry.yaml: registro degli alert email realmente creati →
+  chiave canonica keywords+geoId per attribuire gli annunci alla ricerca giusta).
 - D3 Revisione umana obbligatoria prima di ogni invio; nessun invio autonomo.
 - D4 Batch: raccolta + valutazione + pre-generazione CV in staging; invio manuale.
 - D5 Storage: questo repo (file + git), non Drive. La routine scrive solo lo
