@@ -1,5 +1,7 @@
 # job-hunter — template
 
+![job-hunter — your AI co-pilot for the job hunt, powered by Claude](assets/cover.png)
+
 Personal AI job-search assistant, built as a **Claude Skills** package on a
 single **GitHub repository**. Guided onboarding, a persistent profile,
 multi-source sourcing, fit evaluation, tailored CVs, and application
