@@ -39,6 +39,12 @@ jobs:
         with:
           ref: template
           fetch-depth: 0
+          # Senza questo, actions/checkout configura una credenziale globale
+          # (http.https://github.com/.extraheader) col GITHUB_TOKEN della run,
+          # che sovrascrive qualunque credenziale nell'URL del remote "public"
+          # sotto — il push finirebbe autenticato come github-actions[bot]
+          # (permesso negato sulla repo pubblica) invece che col nostro token.
+          persist-credentials: false
 
       - name: Push verso la repo pubblica configurata
         env:
