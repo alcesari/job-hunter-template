@@ -37,9 +37,19 @@ applications/
   <id>/                    # il nome della cartella È l'id (data inclusa)
     application.yaml       # solo STATO CORRENTE (snapshot)
     events.jsonl           # solo STORIA (append-only)
+    jd.md                  # la JD CONGELATA al momento della promozione
     materials/             # CV/cover/DM prodotti da cv-tailoring (2.2)
       cv.md  cover-letter.md  recruiter-dm.md  (+ PDF renderizzati)
+      diff-report.md       #   verifica di veridicità master↔generato (D3)
 ```
+
+**Perché `jd.md` esiste.** L'annuncio online sparisce: fra tre mesi il link è
+morto e con esso l'unica traccia di *contro cosa* ti sei candidato. Senza il
+testo congelato si sa **che** una candidatura è stata rifiutata, ma non **con
+quale CV** né **contro quale annuncio** — e nessuna analisi a posteriori
+(cosa converte, cosa no) diventa più possibile. Lo staging non lo salva: porta
+solo `links.jd`, e la retention lo pota comunque. La promozione è **l'ultimo
+momento utile** per catturarlo.
 
 **Regola sull'id**: include la data (es. `acme-data-engineer-2026-07`) per evitare collisioni su ricandidature stessa azienda+ruolo. La cartella e il campo `id` in `application.yaml` coincidono sempre.
 
@@ -77,6 +87,31 @@ Un oggetto JSON per riga. Chiavi minime: `date` (YYYY-MM-DD), `type`, `note`. Ch
 
 Il log si APPENDE, mai riscrive.
 
+**Ogni transizione porta quando e perché (requisito per l'analisi a posteriori).**
+`events.jsonl` è già il ledger delle transizioni: `status_change` con `from`/`to`
+esiste, `date` esiste. Due precisazioni che lo rendono davvero analizzabile:
+
+- **`at` (ISO 8601 UTC) — raccomandato su ogni nuovo evento**, accanto a `date`
+  (che resta obbligatorio e invariato: nessuna rottura per gli eventi già
+  scritti). `date` ha granularità giornaliera e non ordina due transizioni dello
+  stesso giorno — che è precisamente il caso di una giornata movimentata
+  (risposta la mattina, colloquio fissato il pomeriggio). Senza `at` i tempi di
+  funnel si calcolano male e nessuno se ne accorge.
+- **La causa non è opzionale.** Ogni `status_change` dichiara *perché*: `note`
+  in linguaggio naturale, più — quando l'origine è un'email — il
+  `gmail_message_id` che l'ha provocata. Uno stato che cambia senza una causa
+  registrata è un buco nella storia: fra sei mesi non si distingue un rifiuto
+  ricevuto da un ritiro deciso.
+
+Esempio di transizione ben formata:
+
+```json
+{"date":"2026-07-20","at":"2026-07-20T14:32:05Z","type":"status_change","from":"candidata","to":"in_corso","note":"invito a colloquio tecnico ricevuto via email","gmail_message_id":"18f…"}
+```
+
+Non è una migrazione: gli eventi vecchi restano validi senza `at`. Chi legge
+tratta `at` come opzionale e ricade su `date` quando manca.
+
 **Righe malformate (robustezza di lettura)**: come per il source-log del tuner,
 una riga non parsabile (JSON rotto, chiavi minime mancanti) non deve MAI far
 fallire la lettura né essere "corretta" riscrivendo il file — il JSONL è scelto
@@ -94,7 +129,48 @@ che il dedup esiste per evitare.
 Su richiesta esplicita ("aggiungila al tracker", "mi sono candidato a X", "promuovi questa dallo staging"). Due punti d'ingresso:
 
 - **Da chat** (una JD/valutazione in corso): raccogli i dati come sotto.
-- **Dallo staging** (D4 — l'utente approva una voce che la routine `job-watch` ha pre-lavorato): la voce `staging/<id>/` porta già `staging.yaml` + `fit.yaml` + eventuali `materials/`. Promuovere = crea `applications/<id>/` (stesso `id`), **sposta** `materials/` in `applications/<id>/materials/`, **persisti** `fit.yaml` in `role-fit/` e mettine il percorso in `links.role_fit`, eredita `intent_id`/`links.jd`/`source`. Poi rimuovi (o marca `approved` e archivia) la voce staging: è uscita dall'anticamera. Lo scarto di una voce staging non crea nulla (`status: discarded`; l'annuncio resta in `state.json` così non rientra). Vedi `job-watch/references/staging-schema.md`.
+- **Dallo staging** (D4 — l'utente approva una voce che la routine `job-watch` ha pre-lavorato): la voce `staging/<id>/` porta già `staging.yaml` + `fit.yaml` + eventuali `materials/`. Promuovere = crea `applications/<id>/` (stesso `id`), **archivia** materiali e JD (vedi «Archiviazione alla promozione» qui sotto), **persisti** `fit.yaml` in `role-fit/` e mettine il percorso in `links.role_fit`, eredita `intent_id`/`links.jd`/`source`. Poi rimuovi (o marca `approved` e archivia) la voce staging: è uscita dall'anticamera. Lo scarto di una voce staging non crea nulla (`status: discarded`; l'annuncio resta in `state.json` così non rientra). Vedi `job-watch/references/staging-schema.md`.
+
+### Archiviazione alla promozione (obbligatoria, non rimandabile)
+
+È il passo che rende ricostruibile a posteriori cosa è stato davvero inviato.
+Va fatto **prima** di rimuovere la voce da staging, e nell'ordine seguente —
+copia, verifica, poi rimuovi: se qualcosa fallisce a metà non hai perso nulla.
+
+1. **Materiali** — copia `staging/<id>/materials/` in
+   `applications/<id>/materials/` (incluso `diff-report.md`), verifica che i
+   file siano arrivati, e solo allora rimuovi l'originale da staging. Se la voce
+   non ha materiali (fit `parziale`/`debole` promosso a mano), salta senza
+   rumore: li genererà `cv-tailoring` quando servono.
+2. **JD** — congela il testo dell'annuncio in `applications/<id>/jd.md`, con
+   un'intestazione di provenienza:
+
+   ```markdown
+   ---
+   fonte: linkedin_alert          # copiato da staging.yaml → source
+   url: https://…                 # links.jd
+   catturata_il: 2026-07-20
+   completezza: completa | parziale | non_disponibile
+   ---
+
+   <testo dell'annuncio>
+   ```
+
+   Da dove prendere il testo, in quest'ordine:
+   - **Indeed** → connettore `get_job_details` (testo completo);
+   - **career page** → l'URL è fetchabile se il dominio è allowlistato;
+   - **LinkedIn** → non fetchabile (V5): **chiedi all'utente di incollarlo**. È
+     il momento giusto per farlo, perché sta candidandosi e ha l'annuncio aperto;
+   - **annuncio già sparito** → `completezza: non_disponibile`, salva comunque
+     `jd.md` con la sola intestazione più quello che è ricostruibile dal
+     `fit.yaml`, dichiarandone la natura. **Non ricostruire il testo
+     inventandolo**: una JD plausibile ma falsa è peggio di una mancante, perché
+     nessuno la ri-metterà in discussione.
+
+   Il campo `completezza` non è burocrazia: distingue un archivio affidabile da
+   uno che *sembra* affidabile, e chi legge fra sei mesi non ha altro modo di
+   saperlo.
+3. **Solo dopo** rimuovi (o marca `approved`) la voce in staging.
 
 1. **Raccogli il minimo**: ruolo, azienda, link JD, `source`, e `intent_id` se noto (da un `role-fit` in chat, o dallo `staging.yaml`, lo hai già, insieme al percorso del file role-fit da mettere in `links.role_fit`; se l'utente arriva dal digest, fatti dare il link).
 2. **DEDUP PRIMA di creare** (obbligatorio): cerca tra le cartelle/`application.yaml` di `applications/` (attive E chiuse — sono tutte lì, la ricerca è semplice) per azienda e ruolo, con normalizzazione fuzzy: minuscolo, senza punteggiatura, senza suffissi societari (S.r.l., S.p.A., B.V., GmbH, Inc, Ltd, AB, SA), tolleranza per varianti di titolo ("BI Developer" ~ "Business Intelligence Developer"). Match probabile → mostra la candidatura esistente e chiedi: è la stessa (aggiorno quella) o una posizione diversa nella stessa azienda (creo una nuova `<id>`)? NON creare in caso di dubbio non risolto.
@@ -155,4 +231,7 @@ Su richiesta ("a che punto sono le candidature", "mostrami la pipeline"): genera
 - Non toccare cartelle del repo diverse da `applications/` (e, in lettura, `role-fit/` per i link).
 - Non riscrivere `events.jsonl`: solo append.
 - Non far divergere snapshot e storico: ogni mutazione aggiorna entrambi nello stesso commit.
+- Non rimuovere una voce da `staging/` prima di aver verificato che materiali e `jd.md` siano arrivati in `applications/<id>/`: l'ordine è copia → verifica → rimuovi.
+- Non ricostruire una JD sparita inventandone il testo: `completezza: non_disponibile` è un esito onesto, una JD plausibile ma falsa no.
+- Non cambiare stato senza registrare la causa nell'evento.
 - Non processare due volte la stessa email (evento `email_processed` di dedup prima di tutto).

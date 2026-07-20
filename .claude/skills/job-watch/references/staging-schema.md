@@ -36,9 +36,19 @@ promozione è un rename/spostamento senza rimappare identità.
 ### `staging.yaml` (snapshot)
 
 - `id` — coincide col nome cartella.
-- `status: pending | approved | discarded` — `pending` alla creazione; la
-  revisione umana lo porta a `approved` (subito prima della promozione) o
-  `discarded`. La routine crea solo `pending` e non tocca mai gli altri stati.
+- `status: pending | approved | discarded | expired` — `pending` alla creazione;
+  la revisione umana lo porta a `approved` (subito prima della promozione) o
+  `discarded`. La routine crea solo `pending`; l'unico altro stato che può
+  scrivere è `expired`.
+  **`discarded` vs `expired` — la distinzione che tiene D3 intatta**:
+  `discarded` è un **giudizio umano** ("non mi interessa"); `expired` è un
+  **fatto osservabile** ("l'annuncio non esiste più"), accertato dalla routine
+  al passo 4-bis con `scripts/check_liveness.py`. La routine non decide mai al
+  posto dell'utente: constata. Un `expired` si assegna SOLO su evidenza positiva
+  di chiusura (404/410, redirect alla lista, marker esplicito) — mai su timeout,
+  403, 5xx o dominio non raggiungibile, che restano `pending`.
+  Una voce `expired` che l'utente ritiene ancora valida può essere riportata a
+  `pending` a mano: `expired` non è irreversibile e non cancella nulla.
 - `company`, `role`, `location`.
 - `source: indeed | linkedin_alert | indeed_alert | career_page | manuale` —
   proiezione di `sources[0].fonte` (retro-compatibilità: i consumatori esistenti
@@ -74,6 +84,14 @@ promozione è un rename/spostamento senza rimappare identità.
 - `score: forte | buono | parziale | debole` — copia dallo `fit.yaml`, per
   ordinare/filtrare senza aprire ogni file (comodità, non seconda fonte).
 - `materials_generated: bool` — true se il gate è passato e `materials/` esiste.
+- `materials_flagged: bool` — **assente o `false`** = il gate di veridicità
+  (`scripts/verify_cv_facts.py`, passo 6 di `job-watch/SKILL.md`) è passato su
+  tutti gli artefatti. **`true`** = almeno un artefatto contiene claim numerici
+  non tracciabili al `master-profile` o frasi vietate: i materiali ci sono ma
+  **non sono verificati**, e la revisione umana deve guardarli prima di usarli.
+  Lo valorizza solo la routine; una sessione interattiva che corregge i
+  materiali lo rimette a `false` dopo un nuovo run verde del gate.
+  Ha senso solo se `materials_generated: true`.
 - `run_id` — la run che l'ha prodotta (ISO 8601), per tracciabilità.
 
 ### `fit.yaml` (valutazione)
@@ -112,11 +130,22 @@ la promozione sposta la cartella senza rimappare nulla.
 2. **Revisione** (umana, in chat): l'utente vede la valutazione e, se generati, il
    diff. Decide.
 3a. **Approvazione → promozione**: `application-tracker` crea `applications/<id>/`,
-   **sposta** i `materials/` in `applications/<id>/materials/`, persiste `fit.yaml`
-   in `role-fit/`, imposta `links.role_fit` e `intent_id`. La voce staging si
-   rimuove (o si marca `approved` e si archivia): è uscita dall'anticamera.
+   archivia i `materials/` in `applications/<id>/materials/` e **congela la JD**
+   in `applications/<id>/jd.md` (l'annuncio online sparirà: la promozione è
+   l'ultimo momento utile per catturarne il testo), persiste `fit.yaml`
+   in `role-fit/`, imposta `links.role_fit` e `intent_id`. L'ordine è
+   **copia → verifica → rimuovi**: la voce staging si rimuove (o si marca
+   `approved` e si archivia) solo dopo che l'archiviazione è confermata, così un
+   fallimento a metà non perde nulla. Contratto completo in
+   `application-tracker/SKILL.md`, sezione «Archiviazione alla promozione».
 3b. **Scarto**: `status: discarded`. L'`annuncio_id` resta in `state.json`, così
    l'offerta non rientra alle run successive. Nessuna candidatura creata.
+3c. **Scadenza** (routine, passo 4-bis): `status: expired` quando
+   `scripts/check_liveness.py` accerta che l'annuncio non esiste più. È l'unica
+   transizione di stato che la routine può fare, e non è una decisione: è una
+   constatazione. Nota nel digest, nessuna candidatura creata, `annuncio_id`
+   invariato in `state.json`. Reversibile a mano se l'utente sa che l'annuncio è
+   ancora valido (es. career page con soft-404 o marker fuorviante).
 
 ## Invarianti
 
@@ -124,10 +153,17 @@ la promozione sposta la cartella senza rimappare nulla.
   fuso è riconducibile a UNA fonte precisa (attribuzione, mai sintesi).
 - `sources[].annuncio_id` restano le chiavi per-fonte di state.json/source-log:
   la fusione vive solo qui, mai a monte.
-- La routine crea solo `pending`; non promuove, non scarta, non riapre.
+- La routine crea solo `pending`; non promuove, non scarta, non riapre. L'unica
+  transizione che le è concessa è `pending → expired`, e solo su evidenza
+  positiva di chiusura dell'annuncio (passo 4-bis): è un fatto accertato, non un
+  giudizio, ed è ciò che la tiene dentro D3.
 - Una voce promossa non torna in staging (vive in `applications/`).
 - `staging/` si può svuotare senza perdere verità (le offerte viste
   restano in `state.json`/`source-log/`, le candidature vere in `applications/`).
-  In pratica: la routine elimina a ogni run le voci `discarded` più vecchie di
-  3 mesi (passo Retention di `job-watch/SKILL.md`); le `pending` non si toccano
-  mai — sono lavoro in attesa di revisione umana.
+  In pratica: la routine elimina a ogni run le voci `discarded` **ed `expired`**
+  più vecchie di 3 mesi (passo Retention di `job-watch/SKILL.md`); le `pending`
+  non si toccano mai — sono lavoro in attesa di revisione umana. `expired` si
+  pota come `discarded` perché in entrambi i casi la voce è uscita dal flusso:
+  nell'una per decisione dell'utente, nell'altra perché l'annuncio non esiste
+  più. È questa coppia che dà allo staging un'uscita che non dipende solo da una
+  decisione umana che potrebbe non arrivare mai.

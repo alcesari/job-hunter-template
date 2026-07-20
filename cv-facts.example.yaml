@@ -1,0 +1,34 @@
+# cv-facts.example.yaml — seed generico per `cv-facts.yaml`.
+#
+# Copia questo file in `cv-facts.yaml` (radice del repo) e adattalo: il file
+# reale contiene metriche del tuo profilo, quindi e' escluso dal branch
+# `template` (templating/exclude-paths.txt). Questo esempio no.
+#
+# Lo legge `scripts/verify_cv_facts.py`, il gate deterministico che confronta i
+# claim numerici di un CV/cover/DM generato con `master-profile.yaml`.
+#
+# REGOLA DI CHI SCRIVE QUI (la piu' importante): questo file lo popola
+# **l'utente**, non l'agente. Un agente che aggiunge da solo una voce ad
+# `allow_metrics` per far passare il proprio output sta annullando il senso del
+# gate — e' esattamente l'autocertificazione che questo controllo esiste per
+# sostituire. L'agente puo' PROPORRE una voce; l'utente la approva.
+
+# Metriche legittime che NON compaiono letteralmente in master-profile.yaml
+# perche' derivate, aggregate o formulate diversamente.
+# Ogni voce va motivata: fra sei mesi il motivo e' l'unica cosa che distingue
+# una deroga legittima da un'allucinazione che qualcuno ha silenziato.
+allow_metrics:
+  - valore: "5 anni"
+    motivo: "somma delle esperienze 2021-2026 nel profilo, mai scritta come totale"
+  # - valore: "30%"
+  #   motivo: "riduzione tempi di build misurata nel progetto X, documentata nel report interno"
+
+# Frasi che non devono MAI comparire in un materiale generato, anche se
+# plausibili: sono i tipici riempitivi che un modello aggiunge da solo e che
+# nessuno ha mai verificato.
+forbidden_phrases:
+  - "Fortune 500"
+  - "leader di mercato"
+  - "brevettato"
+  - "pluripremiato"
+  - "riconosciuto a livello internazionale"

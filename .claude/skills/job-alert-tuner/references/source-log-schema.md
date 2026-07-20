@@ -33,7 +33,7 @@ Se lo stesso annuncio è restituito da 3 ricerche diverse nella stessa run → 3
 | `azienda_fonte` | solo se `fonte: career_page` | string | `id` dell'azienda in `searches/companies.yaml` la cui career page ha prodotto la riga (es. `generali-gruppo`). Assente per le altre fonti. È la chiave che permette al tuner di misurare la resa per-azienda e il cross-source overlap. |
 | `ricerca_id` | sì | string | Identificatore STABILE della ricerca che ha prodotto la riga, **prefissato dall'intento**. Convenzione: `<intento_id>:<fonte>:<titolo>:<location>` tutto minuscolo (es. `data-engineering-eu:indeed:data engineer:milano`). Il prefisso d'intento preserva la stabilità e rende l'attribuzione univoca: la routine non cambia formato tra una run e l'altra. **Per `fonte: linkedin_alert`/`indeed_alert`** la ricerca è un avviso salvato sulla piattaforma: la convenzione è la **chiave canonica del registro** (`searches/alerts-registry.yaml`) `<intento_id>:linkedin_alert:<keywords-slug>:<geoId>` (es. `backend-fullstack-ecommerce:linkedin_alert:backend-developer-or-java-developer-or-full-stack-developer:103350119`), risolta da `searches/alerts-registry.yaml`; un alert non nel registro dà `<intento_id>:linkedin_alert:unmatched:<chiave>`. Per `fonte: career_page` la ricerca è "scarica il feed dell'azienda": convenzione `<intento_id>:career_page:<azienda_fonte>` (es. `backend-fullstack-ecommerce:career_page:generali-gruppo`). |
 | `annuncio_id` | sì | string | Chiave canonica dell'annuncio — LO STESSO identificatore usato in `state.json` per il dedup. È la chiave che permette di calcolare l'overlap. Formato definitivo `<fonte>:<slug(azienda)>:<slug(titolo)>:<slug(location)>` (regola di slug in `job-watch/SKILL.md`, sezione dedup). |
-| `esito` | sì | enum | Esito pipeline per questa run: `incluso_principale` \| `incluso_da_verificare` \| `scartato_lingua` \| `scartato_livello` (Head of/Director/stage o anti-target di `esclusioni.titoli_da_escludere`) \| `scartato_ruolo` (titolo non pertinente ai `ruoli_target` dell'intento — gate positivo di ruolo, prodotto SOLO dal canale `career_page`, che fetcha tutte le posizioni dell'azienda; distinto da `scartato_livello`, che è un anti-target dichiarato, mentre questo è "ruolo semplicemente estraneo": es. HR/actuarial/sales a Generali) \| `scartato_location` (fuori dalle `location_target` dell'intento — anch'esso SOLO `career_page`, che fetcha per-azienda e non per-location; gli altri canali hanno ruolo e location già nella query) \| `scartato_dedup` (già in state.json) \| `non_lavorato_cap` (tagliato dal cap max annunci). |
+| `esito` | sì | enum | Esito pipeline per questa run: `incluso_principale` \| `incluso_da_verificare` \| `scartato_lingua` \| `scartato_livello` (Head of/Director/stage o anti-target di `esclusioni.titoli_da_escludere`) \| `scartato_ruolo` (titolo non pertinente ai `ruoli_target` dell'intento — gate positivo di ruolo, prodotto SOLO dal canale `career_page`, che fetcha tutte le posizioni dell'azienda; distinto da `scartato_livello`, che è un anti-target dichiarato, mentre questo è "ruolo semplicemente estraneo": es. HR/actuarial/sales a Generali) \| `scartato_location` (fuori dalle `location_target` dell'intento — anch'esso SOLO `career_page`, che fetcha per-azienda e non per-location; gli altri canali hanno ruolo e location già nella query) \| `scartato_dedup` (già in state.json) \| `scartato_chiuso` (annuncio verificato come NON più aperto al passo 4-bis, prima della valutazione: 404/410, redirect alla lista o marker esplicito — vedi `scripts/check_liveness.py`. Solo evidenza positiva: un timeout o un 5xx NON producono questo esito, l'annuncio prosegue) \| `non_lavorato_cap` (tagliato dal cap max annunci). |
 | `titolo` | no | string | Titolo annuncio, per leggibilità/debug. |
 | `azienda` | no | string | Azienda, per leggibilità/debug. |
 | `location` | no | string | Location dichiarata dall'annuncio. |
@@ -59,6 +59,21 @@ matcha nessun token distintivo dei `ruoli_target` backend/e-commerce →
 compatibile con Milano/Roma/Remote Italia/Remote EU → `scartato_location`.)
 
 (La seconda riga mostra il caso overlap: stesso `annuncio_id` da due ricerche; per la seconda risulta `scartato_dedup` perché già processato.)
+
+## Cosa NON vive qui (metriche 5 e 6 del tuner)
+
+Le metriche **5 (distribuzione degli score)** e **6 (gap di conversione staging →
+decisione)** di `job-alert-tuner` NON leggono questo file: leggono
+`staging/*/fit.yaml` e `staging/*/staging.yaml` (contratto in
+`job-watch/references/staging-schema.md`). Il source-log registra ciò che il
+**sourcing** ha osservato; lo staging registra ciò che la **valutazione** ha
+prodotto e in che stato di revisione si trova. Sono due domande diverse, e
+cercare i campi dell'una nel contratto dell'altra è una perdita di tempo
+garantita — motivo per cui questa nota esiste.
+
+L'unico punto di contatto è l'esito `non_lavorato_cap` qui sopra: la metrica 5 lo
+usa per dichiarare che la distribuzione degli score osservata **non è un campione
+rappresentativo** quando il cap ha tagliato materiale non valutato.
 
 ## `source-log/runs.jsonl` — ledger delle run (osservabilità)
 
