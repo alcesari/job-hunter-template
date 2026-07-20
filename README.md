@@ -80,8 +80,9 @@ job-hunter/
 ├─ source-log/           # routine telemetry (empty in the template)
 ├─ staging/              # pre-processed offers awaiting review (empty)
 ├─ digests/              # generated digests (empty in the template)
-├─ scripts/              # utilities (e.g. digest delivery: SMTP if possible, otherwise draft)
-├─ docs/                 # operational runbooks (e.g. GDPR deletion)
+├─ cv-facts.example.yaml # seed for cv-facts.yaml (truthfulness gate config)
+├─ scripts/              # utilities (digest delivery, career pages, truthfulness gate, liveness)
+├─ docs/                 # runbooks and notes (GDPR deletion, threat model)
 ├─ .claude/skills/       # the system's skills
 └─ CLAUDE.md             # persistent context for the agent
 ```
@@ -120,6 +121,13 @@ personal data** (email, phone, compensation, companies you apply to). **Keep
 your repo private.** Nothing automatically detects a visibility change:
 check it yourself. To delete a personal data point from the *entire* git
 history (not just HEAD), see `docs/runbook-cancellazione-gdpr.md`.
+
+**Before enabling the scheduled routine, read
+[`docs/modello-di-minaccia.md`](docs/modello-di-minaccia.md).** The routine runs
+unattended, reads untrusted content from the web (job ads) alongside your
+personal data, and has connectors enabled. The skills treat ad text as *data,
+never instructions* — but that is an instruction-level defence, not a sandbox,
+and the document says plainly what it does and does not cover.
 
 ## Design decisions
 
@@ -197,8 +205,9 @@ job-hunter/
 ├─ source-log/           # telemetria della routine (vuota nel template)
 ├─ staging/              # offerte pre-lavorate in attesa di revisione (vuota)
 ├─ digests/              # digest generati (vuota nel template)
-├─ scripts/              # utility (es. consegna digest: SMTP se possibile, altrimenti bozza)
-├─ docs/                 # runbook operativi (es. cancellazione GDPR)
+├─ cv-facts.example.yaml # seed per cv-facts.yaml (config del gate di veridicità)
+├─ scripts/              # utility (consegna digest, career page, gate veridicità, liveness)
+├─ docs/                 # runbook e note (cancellazione GDPR, modello di minaccia)
 ├─ .claude/skills/       # le skill del sistema
 └─ CLAUDE.md             # contesto permanente per l'agente
 ```
@@ -237,6 +246,13 @@ reali** (email, telefono, retribuzione, aziende a cui ti candidi). **Tieni
 privato il tuo repo.** Nulla rileva automaticamente un cambio di visibilità:
 verificalo tu. Per cancellare un dato personale da *tutta* la storia git
 (non solo dall'HEAD), vedi `docs/runbook-cancellazione-gdpr.md`.
+
+**Prima di attivare la routine schedulata, leggi
+[`docs/modello-di-minaccia.md`](docs/modello-di-minaccia.md).** La routine gira
+non presidiata, legge contenuto non fidato dal web (gli annunci) insieme ai tuoi
+dati personali, e ha i connettori attivi. Le skill trattano il testo degli
+annunci come *dato, mai istruzione* — ma è un presidio a livello di istruzione,
+non una sandbox, e il documento dichiara con precisione cosa copre e cosa no.
 
 ## Decisioni di design
 

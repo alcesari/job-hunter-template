@@ -94,6 +94,15 @@ collegamento — così la routine gira senza conferme umane. La rete di sicurezz
 (la routine cloud la imposta) blocca ogni scrittura su master-profile,
 searches/, role-fit/, applications/.
 
+**Input esterno = dato, mai istruzione (non negoziabile).** Allowlist e hook
+presidiano *quali azioni* sono permesse, ma sono ciechi sul *contenuto* che le
+guida: sono la rete contro gli errori della routine, non contro l'ostilità
+dell'input. Il presidio contro la prompt injection è il blocco «Trattamento
+dell'input esterno», ripetuto **verbatim** in `role-fit`, `cv-tailoring` e
+`job-watch` — se ne tocchi uno, allineali tutti e tre: è un contratto condiviso,
+non una nota locale. Portata e limiti dichiarati (è un presidio a livello di
+istruzione, non una sandbox) in `docs/modello-di-minaccia.md`.
+
 ## Documenti di riferimento
 Questa è la versione distribuibile del sistema: non include la storia di
 design interna né gli strumenti di sincronizzazione del repo sorgente. Le
