@@ -27,6 +27,18 @@ anagrafica:
   preavviso:
     durata: string                  # es. "30 giorni", "immediato"
     note: string                    # es. clausole particolari, ferie da smaltire
+  link_esterni:                     # OPZIONALE, ogni campo opzionale singolarmente.
+                                     # Usati in intestazione CV/cover letter (cv-tailoring,
+                                     # 2.2) come i campi email/telefono sopra. Letti anche
+                                     # da role-fit come contesto aggiuntivo sull'utente.
+                                     # Scritti SOLO da sessioni interattive (D5, come il
+                                     # resto di master-profile.yaml) — la routine job-watch
+                                     # non li tocca né li usa per fetch automatici: un sito
+                                     # qui non attiva scraping, è solo dato del profilo.
+    sito_personale: string
+    linkedin: string
+    github: string
+    portfolio: string
 
 retribuzione:
   attuale:
