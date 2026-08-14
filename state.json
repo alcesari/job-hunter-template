@@ -1,0 +1,374 @@
+{
+ "seen": {
+  "indeed:agilent-technologies-spain-s-l:ai-data-engineer:barcelona-barcelona-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:amazon-com:business-intelligence-engineer-data-and-analytics:barcelona-barcelona-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:amazon-warehouse:automation-engineer-cf:torrazza-piemonte-piemonte": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:apg:pyspark-databricks-developer:amsterdam-centrum": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:apg:pyspark-databricks-developer:heerlen": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:aquon:bi-specialist-data-engineer:houten": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:base-life-science:data-engineer-data-consultant:ourense-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:bluvacanze:commercial-support-specialist-ufficio-gare:milano-lombardia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:bmatix:data-engineer:kontich": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:bmatix:junior-data-engineer:kontich": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:bnp-paribas-fortis:functional-data-engineer-hq-bruxelles:brussels": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:boston-consulting-group:forward-deployed-ai-engineer-internship-spain-bcg-x:barcelona-barcelona-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:brain-management-srl:junior-data-ai-professional:milano-lombardia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:candriam:digital-analytics-conversion-specialist-f-m:brussels": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:cefla-s-c:sales-data-specialist-internship:imola-emilia-romagna": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:chaberton-italia-srl:bi-specialist:modena-emilia-romagna": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:cisalfa-sport-spa:merchandise-planner-specialist:curno-lombardia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:codeguild:data-engineer-amsterdam:amsterdam-centrum": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:covisian:data-scientist-expert-cuneo:cuneo-piemonte": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:deloitte:data-engineer:zaventem": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:direzione-lavoro:ai-data-analytics-engineer:casoria-campania": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:do-co:business-intelligence-specialist-100-on-site:madrid-madrid-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:drd-recruiting:mid-data-platform-engineer-28471-01-ld:cuneo-piemonte": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:easi-sa:junior-data-consultant-spoom:nivelles": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:eucon-gmbh:data-analytics-engineer-architect-m-f-d:amersfoort": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:eumetsat:data-processing-system-engineer-in-germany:werk-van-thuis": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:ey:talent-development-analytics-specialist-industries:diegem": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:famindo-digital-commerce-italia-srl:e-commerce-data-and-business-intelligence-analyst:cesena-emilia-romagna": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:freudenberg-sealing-technologies-s-l-u:it-data-engineer-f-m-d:en-remoto": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:gnt-international:data-engineer:mierlo": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:growin:bi-developer-brussels:brussels": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:haskoning:data-engineer:amersfoort": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:haskoning:power-bi-developer:amersfoort": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:headcount:bi-specialist-data-viz-consultant:edegem": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:headcount:junior-data-scientist:ghent": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:hello-vacanze-srl:data-engineer-data-analyst-data-analytics-platform:porto-san-giorgio-marche": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:ie-university:junior-data-translator-it:madrid-madrid-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:ing:power-bi-specialist-data-analyst-gja-16:brussels": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:iodigital:database-bi-specialist:madrid-madrid-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:jobros:senior-it-specialist:bolzano-vicentino-veneto": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:jumbo-supermarkten:junior-data-platform-engineer:veghel": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:keystone-solutions:data-analytics-engineer:brussels": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:keystone-solutions:data-engineer:namur-city": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:knowmad-mood:business-data-analysts-reporting-specialist-sas:las-rozas-de-madrid-madrid-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:lagom:data-specialist-totaal-verloningspakket:anzegem": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:logicalis:data-engineer:barcelona-barcelona-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:marchesini-group-s-p-a:junior-automation-data-analytics-engineer:pianoro-emilia-romagna": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:mielabelo:data-engineer:namur-city": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:minini-srl:data-analyst:majano-friuli-venezia-giulia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:norriq:data-analyst-data-visualisation:brussels": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:north-sea-port:data-engineer-microsoft-fabric-azure:bruxelles-etterbeek": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:omya-business-services-slu:junior-data-analytics-product-specialist:barcelona-barcelona-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:oxigent-technologies:data-engineer-data-products:barcelona-barcelona-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:pirene-srl:data-analyst-hr:roma-lazio": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:procter-gamble:data-engineer-internship-m-f-x:la-moraleja-madrid-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:randstad-professionals:datawarehouse-bi-specialist:vianen": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:randstad-professionals:project-procurement-finance-specialist:amsterdam-centrum": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:reale-group:data-engineer:madrid-madrid-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:schindler:digital-analytics-specialist:alcobendas-madrid-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:sdg-group:power-bi-specialist:madrid-madrid-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:sesame-hr:business-intelligence-specialist:valencia-valencia-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:siemens-healthineers:analytics-engineer:en-remoto": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:soft-strategy:data-engineer:lazio": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:solgeko-srl:crm-marketing-automation-specialist:lonato-del-garda-lombardia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:stanley-stella:digital-data-specialist:oudergem": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:timestamp:data-engineer:castelldefels-barcelona-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:tiqets:analytics-engineer:amsterdam": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:tomasi-auto:crm-marketing-automation-specialist:guidizzolo-lombardia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:verisure:data-analyst:pozuelo-de-alarcon-madrid-provincia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:viridea:addetto-it-specialist-sistemista-senior:cusago-lombardia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:vision-healthcare:bi-engineer:haarlem": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:white-wolves:power-bi-specialist:antwerp": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:wpp-media:data-analytics-manager-english:amsterdam": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "indeed:zeeuw-zeeuw:bi-developer:roosendaal": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:all-about-work:data-engineer:utrecht": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:amazon:business-intelligence-engineer-data-and-analytics:barcellona": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:arcady:data-engineer:zwolle": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:asistencia-dental-especializada-ade:software-engineer-data-engineering:spagna": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:atcon-global:senior-data-platform-engineer-spark-spark-connect:bruxelles": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:atos:data-engineer-m-w-d:berlino": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:atos:data-engineer-m-w-d:germania": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:aveva:data-engineer:madrid": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:axelio:data-engineer:utrecht-paesi-bassi": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:ayesa-digital:bi-data-engineer:bruxelles-capitale-belgio": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:belgie-vacature:data-engineer:bruxelles": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:booking-com:data-engineer-i:amsterdam": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:coolblue:analytics-engineer:rotterdam": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:dagrofa-aps:data-engineer:copenaghen": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:emagine:data-engineer:bruxelles": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:forte-group:data-engineer:unione-europea": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:fyld:data-engineer:porto": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:hays:data-engineer:barcellona": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:haystack:data-engineer:germania": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:hvc:data-engineer:alkmaar": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:ingamejob-com:data-engineer-analytics-engineer:estonia": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:jobbsquare-belgie:data-scientist-data-engineer-medior:bruxelles": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:jobgether:data-engineer-senior:paesi-bassi": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:jobgether:data-engineer-senior:spagna": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:jobgether:data-engineer:paesi-bassi": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:jobgether:data-engineer:spagna": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:kbc-bank-verzekering:cloud-big-data-engineer:bruxelles": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:levy-professionals:data-engineer:zeist": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:metyis:data-engineering-associate:amsterdam": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:moody-s-corporation:data-engineer:bruxelles": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:navara:data-engineer:brabante-settentrionale-paesi-bassi": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:ogury:data-engineer:barcellona": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:olx:data-engineer-domain-data:portogallo": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:plain-concepts:data-engineer-architect:spagna": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:projective-talent:functional-data-engineer:bruxelles": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:qover:senior-data-engineer-bigquery-dbt-python-airbyte-looker-docker-ci-cd:bruxelles": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:quik-hire-staffing:data-infrastructure-engineer-remote:paesi-bassi": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:relevant-online:data-engineer:utrecht-area": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:rp-one:data-engineer:bruxelles": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:schneider-electric:data-engineer-ll:barcellona": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:spects:data-engineer:utrecht-paesi-bassi": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:syntonize:data-engineer:provincia-de-madrid": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:tchibo:data-engineer:bucarest": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:thermeleon:senior-data-engineer:rotterdam": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:vivid-resourcing:data-and-analytics-engineer:lovanio": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:vodafoneziggo:big-data-engineer:utrecht": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:w-hunt-espana:data-engineer:spagna": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:xeos:cloud-data-engineer:fiandre-belgio": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  },
+  "linkedin_alert:zurich-insurance:data-engineer:barcellona": {
+   "first_seen": "2026-08-14T12:42:23Z"
+  }
+ },
+ "career_page_health": {}
+}

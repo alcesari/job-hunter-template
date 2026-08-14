@@ -1,0 +1,24 @@
+meta:
+  data_valutazione: "2026-08-14"
+  ruolo: Data Engineer I
+  azienda: Booking.com
+  location: Amsterdam, Paesi Bassi
+  link: "https://www.linkedin.com/jobs/view/4452677549/"
+  sorgente: linkedin_alert
+  intento: data-engineering-bi-eu
+
+valutazione:
+  score: parziale
+  match:
+    - "Titolo 'Data Engineer I' suggerisce un livello entry/mid coerente con l'esperienza del profilo (~4 anni)"
+    - "Azienda nota e strutturata, con probabile stack dati moderno affine al percorso di crescita del profilo"
+  gaps:
+    - gap: "Nessuna job description disponibile dall'alert LinkedIn: solo titolo, azienda e località"
+      peso: critico
+      nota: "Impossibile verificare stack tecnico, requisiti linguistici o retribuzione"
+  considerazioni:
+    - "Booking.com è una grande tech company con sede ad Amsterdam: verosimilmente ambiente di lavoro in inglese"
+    - "Da aprire su LinkedIn per leggere il testo completo prima di qualunque decisione"
+
+esito: valutato
+note: "Valutazione limitata dalla mancanza di JD nell'alert; azienda e titolo sono un segnale positivo ma non sufficiente per generare materiali."

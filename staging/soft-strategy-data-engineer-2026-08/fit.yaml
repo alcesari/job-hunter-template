@@ -1,0 +1,31 @@
+meta:
+  data_valutazione: "2026-08-14"
+  ruolo: Data Engineer
+  azienda: SOFT STRATEGY
+  location: Bari (in presenza)
+  link: "https://to.indeed.com/aaqzwtbmxwlp"
+  sorgente: indeed
+  intento: data-engineering-bi-eu
+
+valutazione:
+  score: debole
+  match:
+    - "Esperienza pregressa su SQL e database relazionali (Teradata, Oracle-style) da GFT Technologies"
+    - "Sviluppo di pipeline dati in Python nel ruolo attuale (Earth Energy)"
+  gaps:
+    - gap: "Nessuna esperienza su Kafka, Apache Spark/PySpark, Apache NiFi, Apache Iceberg, Cloudera — lo stack core del progetto (piattaforma CDC/Lakehouse Medallion)"
+      peso: critico
+      nota: "È il cuore tecnico della posizione (change data capture, streaming, layer Bronze/Silver/Gold); il profilo ha solo Hadoop/Hive come esposizione big-data, non lo stack richiesto"
+    - gap: "Pacchetto retributivo dichiarato 30.000–40.000 EUR lordi/anno (2000–2800 EUR/mese)"
+      peso: rilevante
+      nota: "Ben sotto l'aspettativa minima di 45.000 EUR dichiarata nel master-profile"
+    - gap: "Sede di lavoro in presenza a Bari, non remoto/ibrido"
+      peso: marginale
+      nota: "Comporterebbe un trasferimento non pianificato; il profilo dichiara disponibilità al trasferimento ma senza aree specifiche indicate"
+  considerazioni:
+    - "Richiesti 4-6 anni di esperienza come Data Engineer: il profilo ne ha circa 4, sul limite inferiore"
+    - "Ruolo presso cliente finale in consulenza (Soft Strategy), livello 'Consultant/Senior Consultant'"
+    - "Nessun requisito linguistico oltre l'italiano (annuncio e ruolo in italiano)"
+
+esito: valutato
+note: "Gap tecnico critico sullo stack streaming/lakehouse e retribuzione sotto floor: fit debole nonostante la sede in Italia."

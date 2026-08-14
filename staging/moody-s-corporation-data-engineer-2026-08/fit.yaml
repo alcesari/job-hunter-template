@@ -1,0 +1,24 @@
+meta:
+  data_valutazione: "2026-08-14"
+  ruolo: Data Engineer
+  azienda: Moody's Corporation
+  location: Bruxelles, Belgio
+  link: "https://www.linkedin.com/jobs/view/4425908804/"
+  sorgente: linkedin_alert
+  intento: data-engineering-bi-eu
+
+valutazione:
+  score: parziale
+  match:
+    - "Titolo del ruolo (Data Engineer) compatibile con il profilo"
+    - "Grande multinazionale finanziaria: verosimile ambiente di lavoro internazionale in inglese"
+  gaps:
+    - gap: "Nessuna job description disponibile dall'alert LinkedIn: solo titolo, azienda e località"
+      peso: critico
+      nota: "Impossibile verificare stack tecnico, seniority richiesta o retribuzione"
+  considerazioni:
+    - "Moody's è un'azienda finanziaria globale nota: probabile stack dati enterprise, da verificare"
+    - "Da aprire su LinkedIn per leggere il testo completo prima di qualunque decisione"
+
+esito: valutato
+note: "Valutazione limitata dalla mancanza di JD nell'alert; azienda nota è un segnale positivo ma non sufficiente per generare materiali."

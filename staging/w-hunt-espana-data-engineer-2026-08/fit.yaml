@@ -1,0 +1,23 @@
+meta:
+  data_valutazione: "2026-08-14"
+  ruolo: Data Engineer
+  azienda: W Hunt España
+  location: Spagna
+  link: "https://www.linkedin.com/jobs/view/4451403209/"
+  sorgente: linkedin_alert
+  intento: data-engineering-bi-eu
+
+valutazione:
+  score: parziale
+  match:
+    - "Titolo del ruolo (Data Engineer) compatibile con il profilo e con l'intento di ricerca"
+  gaps:
+    - gap: "Nessuna job description disponibile dall'alert LinkedIn: solo titolo, azienda e località generica (Spagna)"
+      peso: critico
+      nota: "Impossibile verificare stack tecnico, seniority, sede precisa, lingua richiesta o retribuzione"
+  considerazioni:
+    - "W Hunt España è verosimilmente un'agenzia di recruiting: il ruolo è probabilmente per un cliente non nominato"
+    - "Da aprire su LinkedIn per leggere il testo completo prima di qualunque decisione"
+
+esito: valutato
+note: "Valutazione limitata dalla mancanza di JD nell'alert."

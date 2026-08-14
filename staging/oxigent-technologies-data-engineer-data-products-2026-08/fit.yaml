@@ -1,0 +1,29 @@
+meta:
+  data_valutazione: "2026-08-14"
+  ruolo: Data Engineer – Data Products
+  azienda: Oxigent Technologies (cliente retail, Hub Digital Barcellona)
+  location: Barcelona, Spagna (ibrido/remoto in Spagna)
+  link: "https://to.indeed.com/aaf4ptpth7s9"
+  sorgente: indeed
+  intento: data-engineering-bi-eu
+
+valutazione:
+  score: buono
+  match:
+    - "Solida base Python e SQL per sviluppo pipeline dati, esercitata quotidianamente in Earth Energy (market data, position management)"
+    - "Esperienza diretta su GCP (PoC Microsoft Fabric vs Google Cloud Platform/BigQuery in corso) rilevante per l'ambiente cloud richiesto (GCP/Azure)"
+    - "Circa 4 anni di esperienza in ruoli data-oriented, in linea con il minimo di 4 anni richiesto dalla JD"
+  gaps:
+    - gap: "Nessuna esperienza pratica con Databricks, Apache Spark o Airflow"
+      peso: rilevante
+      nota: "Sono le tecnologie big-data core del ruolo; il profilo ha solo esposizione concettuale a Hadoop/Hive (GFT), non uso diretto di questo stack"
+    - gap: "Nessuna esperienza dichiarata con strumenti di monitoring come Grafana o Azure Monitoring"
+      peso: marginale
+      nota: "Componente operativa della JD, secondaria rispetto allo sviluppo pipeline"
+  considerazioni:
+    - "Retribuzione dichiarata 42.000–50.000 EUR lordi/anno: leggermente sotto il minimo di 45.000 EUR ma non nettamente, e con margine fino a 50.000 EUR"
+    - "Livello di inglese minimo B2 richiesto: il profilo ha C1"
+    - "Modalità di lavoro flessibile, ibrida a Barcellona o full remoto in Spagna: compatibile con la disponibilità dichiarata"
+
+esito: valutato
+note: "Fit buono su Python/SQL/GCP e seniority; il gap Databricks/Spark/Airflow è reale ma la RAL non è chiaramente sotto floor (42-50k vs minimo 45k) — materiali pre-generati."

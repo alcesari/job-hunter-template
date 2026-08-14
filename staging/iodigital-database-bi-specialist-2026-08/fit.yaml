@@ -1,0 +1,29 @@
+meta:
+  data_valutazione: "2026-08-14"
+  ruolo: Database & BI Specialist
+  azienda: iodigital
+  location: Madrid, Spagna
+  link: "https://to.indeed.com/aaxljnj7jlvw"
+  sorgente: indeed
+  intento: data-engineering-bi-eu
+
+valutazione:
+  score: parziale
+  match:
+    - "Profilo trasversale SQL/ETL/BI (DataStage, BigQuery, Looker) coerente con la richiesta di un ruolo 'database + BI'"
+  gaps:
+    - gap: "L'annuncio cerca esplicitamente 1-3 anni di esperienza (profilo junior); il candidato ne ha circa 4"
+      peso: rilevante
+      nota: "Non è un gap di competenze ma di posizionamento: rischio di essere scartato come overqualified o di un ruolo sotto le sue aspettative di carriera/retribuzione"
+    - gap: "Annuncio interamente in spagnolo, nessuna indicazione che l'inglese sia sufficiente per operare"
+      peso: rilevante
+      nota: "Il profilo non parla spagnolo; l'ambiente di lavoro descritto sembra spagnolo-centrico"
+    - gap: "Data di pubblicazione 23/11/2024: quasi due anni fa, verosimilmente annuncio scaduto o ripubblicato senza aggiornamento"
+      peso: critico
+      nota: "Nessuna verifica di liveness automatica disponibile per il canale Indeed in questo run; segnale di freschezza molto negativo, da verificare manualmente prima di considerarlo"
+  considerazioni:
+    - "Nessuna retribuzione dichiarata"
+    - "Nessun requisito di seniority esplicito oltre 1-3 anni (sotto il target medio dell'intento)"
+
+esito: valutato
+note: "Fit debole/parziale: mismatch di seniority, rischio linguistico e soprattutto un annuncio verosimilmente non più aggiornato (quasi 2 anni). Da verificare prima di qualunque azione."

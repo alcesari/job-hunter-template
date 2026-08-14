@@ -1,0 +1,24 @@
+id: navara-data-engineer-2026-08
+status: pending
+company: NAVARA
+role: Data Engineer
+location: Brabante Settentrionale, Paesi Bassi
+source: linkedin_alert
+position_id: navara:data-engineer:brabante-settentrionale-paesi-bassi
+sources:
+  - fonte: linkedin_alert
+    annuncio_id: "linkedin_alert:navara:data-engineer:brabante-settentrionale-paesi-bassi"
+    jd: "https://www.linkedin.com/jobs/view/4452421563/"
+    apply_url: "https://www.linkedin.com/jobs/view/4452421563/"
+    fetched_at: "2026-08-14T12:42:23Z"
+primary_source: linkedin_alert
+preferred_apply_channel: linkedin_alert
+possible_duplicate_of: null
+intent_id: data-engineering-bi-eu
+annuncio_id: "linkedin_alert:navara:data-engineer:brabante-settentrionale-paesi-bassi"
+links:
+  jd: "https://www.linkedin.com/jobs/view/4452421563/"
+score: parziale
+materials_generated: false
+materials_flagged: false
+run_id: "2026-08-14T12:42:23Z"

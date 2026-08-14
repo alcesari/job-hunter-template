@@ -1,0 +1,24 @@
+id: oxigent-technologies-data-engineer-data-products-2026-08
+status: pending
+company: Oxigent Technologies
+role: Data Engineer – Data Products
+location: Barcelona, Spagna (ibrido o full remoto in Spagna)
+source: indeed
+position_id: oxigent-technologies:data-engineer-data-products:barcelona-barcelona-provincia
+sources:
+  - fonte: indeed
+    annuncio_id: "indeed:oxigent-technologies:data-engineer-data-products:barcelona-barcelona-provincia"
+    jd: "https://to.indeed.com/aaf4ptpth7s9"
+    apply_url: "https://to.indeed.com/aaf4ptpth7s9"
+    fetched_at: "2026-08-14T12:42:23Z"
+primary_source: indeed
+preferred_apply_channel: indeed
+possible_duplicate_of: null
+intent_id: data-engineering-bi-eu
+annuncio_id: "indeed:oxigent-technologies:data-engineer-data-products:barcelona-barcelona-provincia"
+links:
+  jd: "https://to.indeed.com/aaf4ptpth7s9"
+score: buono
+materials_generated: true
+materials_flagged: false
+run_id: "2026-08-14T12:42:23Z"

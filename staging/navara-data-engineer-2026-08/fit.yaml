@@ -1,0 +1,23 @@
+meta:
+  data_valutazione: "2026-08-14"
+  ruolo: Data Engineer
+  azienda: NAVARA
+  location: Brabante Settentrionale, Paesi Bassi
+  link: "https://www.linkedin.com/jobs/view/4452421563/"
+  sorgente: linkedin_alert
+  intento: data-engineering-bi-eu
+
+valutazione:
+  score: parziale
+  match:
+    - "Titolo del ruolo (Data Engineer) compatibile con il profilo e con l'intento di ricerca"
+  gaps:
+    - gap: "Nessuna job description disponibile dall'alert LinkedIn: solo titolo, azienda e località"
+      peso: critico
+      nota: "Impossibile verificare stack tecnico, seniority richiesta, lingua o retribuzione"
+  considerazioni:
+    - "Azienda poco nota al di fuori dell'annuncio: nessun segnale aggiuntivo disponibile"
+    - "Da aprire su LinkedIn per leggere il testo completo prima di qualunque decisione"
+
+esito: valutato
+note: "Valutazione limitata dalla mancanza di JD nell'alert."

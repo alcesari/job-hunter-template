@@ -1,0 +1,24 @@
+id: soft-strategy-data-engineer-2026-08
+status: pending
+company: SOFT STRATEGY
+role: Data Engineer
+location: Bari (Lazio nell'annuncio Indeed, sede reale Bari, in presenza)
+source: indeed
+position_id: soft-strategy:data-engineer:lazio
+sources:
+  - fonte: indeed
+    annuncio_id: "indeed:soft-strategy:data-engineer:lazio"
+    jd: "https://to.indeed.com/aaqzwtbmxwlp"
+    apply_url: "https://to.indeed.com/aaqzwtbmxwlp"
+    fetched_at: "2026-08-14T12:42:23Z"
+primary_source: indeed
+preferred_apply_channel: indeed
+possible_duplicate_of: null
+intent_id: data-engineering-bi-eu
+annuncio_id: "indeed:soft-strategy:data-engineer:lazio"
+links:
+  jd: "https://to.indeed.com/aaqzwtbmxwlp"
+score: debole
+materials_generated: false
+materials_flagged: false
+run_id: "2026-08-14T12:42:23Z"

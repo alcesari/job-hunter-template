@@ -1,0 +1,24 @@
+id: haskoning-data-engineer-2026-08
+status: pending
+company: HASKONING
+role: Data Engineer
+location: Amersfoort, Paesi Bassi
+source: indeed
+position_id: haskoning:data-engineer:amersfoort
+sources:
+  - fonte: indeed
+    annuncio_id: "indeed:haskoning:data-engineer:amersfoort"
+    jd: "https://to.indeed.com/aabzpnkwwkt2"
+    apply_url: "https://to.indeed.com/aabzpnkwwkt2"
+    fetched_at: "2026-08-14T12:42:23Z"
+primary_source: indeed
+preferred_apply_channel: indeed
+possible_duplicate_of: null
+intent_id: data-engineering-bi-eu
+annuncio_id: "indeed:haskoning:data-engineer:amersfoort"
+links:
+  jd: "https://to.indeed.com/aabzpnkwwkt2"
+score: parziale
+materials_generated: false
+materials_flagged: false
+run_id: "2026-08-14T12:42:23Z"

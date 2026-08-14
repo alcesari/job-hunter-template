@@ -1,0 +1,24 @@
+id: levy-professionals-data-engineer-2026-08
+status: pending
+company: Levy Professionals
+role: Data Engineer
+location: Zeist, Paesi Bassi
+source: linkedin_alert
+position_id: levy-professionals:data-engineer:zeist
+sources:
+  - fonte: linkedin_alert
+    annuncio_id: "linkedin_alert:levy-professionals:data-engineer:zeist"
+    jd: "https://www.linkedin.com/jobs/view/4453137265/"
+    apply_url: "https://www.linkedin.com/jobs/view/4453137265/"
+    fetched_at: "2026-08-14T12:42:23Z"
+primary_source: linkedin_alert
+preferred_apply_channel: linkedin_alert
+possible_duplicate_of: null
+intent_id: data-engineering-bi-eu
+annuncio_id: "linkedin_alert:levy-professionals:data-engineer:zeist"
+links:
+  jd: "https://www.linkedin.com/jobs/view/4453137265/"
+score: parziale
+materials_generated: false
+materials_flagged: false
+run_id: "2026-08-14T12:42:23Z"

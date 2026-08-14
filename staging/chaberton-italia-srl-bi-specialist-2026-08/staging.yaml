@@ -1,0 +1,24 @@
+id: chaberton-italia-srl-bi-specialist-2026-08
+status: pending
+company: Chaberton Italia srl
+role: BI Specialist
+location: Modena, Emilia-Romagna (ibrido, 6gg smart working/mese)
+source: indeed
+position_id: chaberton-italia-srl:bi-specialist:modena-emilia-romagna
+sources:
+  - fonte: indeed
+    annuncio_id: "indeed:chaberton-italia-srl:bi-specialist:modena-emilia-romagna"
+    jd: "https://to.indeed.com/aa2drt6qcxrk"
+    apply_url: "https://to.indeed.com/aa2drt6qcxrk"
+    fetched_at: "2026-08-14T12:42:23Z"
+primary_source: indeed
+preferred_apply_channel: indeed
+possible_duplicate_of: null
+intent_id: data-engineering-bi-eu
+annuncio_id: "indeed:chaberton-italia-srl:bi-specialist:modena-emilia-romagna"
+links:
+  jd: "https://to.indeed.com/aa2drt6qcxrk"
+score: buono
+materials_generated: false
+materials_flagged: false
+run_id: "2026-08-14T12:42:23Z"

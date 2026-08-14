@@ -1,0 +1,29 @@
+meta:
+  data_valutazione: "2026-08-14"
+  ruolo: Power BI Specialist
+  azienda: SDG Group
+  location: Madrid, Spagna (ibrido/remoto)
+  link: "https://to.indeed.com/aa4mfmcl2mzm"
+  sorgente: indeed
+  intento: data-engineering-bi-eu
+
+valutazione:
+  score: buono
+  match:
+    - "Esperienza di sviluppo dashboard e modellazione dati BI (Looker/LookML, Streamlit) trasferibile a Power BI (modellazione, DAX, storytelling con dati)"
+    - "Background da consulenza tecnica su progetti dati per clienti (GFT Technologies, cliente bancario tier-1) affine al modello di delivery di SDG Group"
+    - "Ambiente di lavoro internazionale in inglese: nessun requisito di spagnolo per il ruolo"
+  gaps:
+    - gap: "Nessuna esperienza pratica dichiarata specificamente su Power BI (DAX avanzato, Power Query)"
+      peso: rilevante
+      nota: "Competenza BI equivalente è presente (Looker/LookML) ma lo strumento specifico richiesto va colmato/argomentato come apprendimento rapido"
+    - gap: "Nessuna certificazione Power BI o Power Platform (Power Apps, Power Automate) nel profilo"
+      peso: marginale
+      nota: "La JD la definisce 'molto valorizzabile', non un requisito bloccante"
+  considerazioni:
+    - "Retribuzione non dichiarata nell'annuncio: non verificabile rispetto all'aspettativa 45-55k"
+    - "Modalità ibrida con possibilità di full remoto secondo location; compatibile con disponibilità al trasferimento/remoto del profilo"
+    - "Azienda di consulenza dati con forte enfasi su formazione interna: coerente con profilo in fase di transizione di stack BI"
+
+esito: valutato
+note: "Fit buono su affinità di ruolo e contesto consulenziale; gap principale è la mancanza di esperienza diretta su Power BI, colmabile e da argomentare in cover letter."

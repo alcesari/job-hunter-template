@@ -1,0 +1,29 @@
+meta:
+  data_valutazione: "2026-08-14"
+  ruolo: BI Specialist
+  azienda: Chaberton Italia srl (per azienda cliente settore Food)
+  location: Modena, Emilia-Romagna (ibrido)
+  link: "https://to.indeed.com/aa2drt6qcxrk"
+  sorgente: indeed
+  intento: data-engineering-bi-eu
+
+valutazione:
+  score: buono
+  match:
+    - "Ownership funzionale reale di Business Central in Earth Energy (coordinamento consulenti, integrazioni, data ingestion) — la JD lo cita esplicitamente come area di responsabilità"
+    - "Guida dell'adozione AI aziendale con Claude/ChatGPT in Earth Energy — match diretto con 'gestione e adozione di strumenti AI (Claude, ChatGPT e simili)' della JD"
+    - "Esperienza di BI e dashboarding (Looker/LookML, Streamlit) trasferibile a Power BI; solida base SQL"
+  gaps:
+    - gap: "Nessuna esperienza pratica dichiarata su Power BI (DAX, Power Query, report avanzati)"
+      peso: rilevante
+      nota: "È lo strumento BI centrale della posizione; il profilo ha esperienza equivalente su Looker/LookML e Streamlit, competenza trasferibile ma da argomentare in colloquio"
+    - gap: "Nessuna esperienza dichiarata con Power Automate, Zapier o Make per l'automazione dei flussi"
+      peso: marginale
+      nota: "Componente minore della JD (automazione), il resto del profilo AI/dati compensa"
+  considerazioni:
+    - "Retribuzione dichiarata 35.000–40.000 EUR/anno: sotto il minimo di 45.000 EUR dell'aspettativa nel master-profile"
+    - "3-6 anni di esperienza richiesti: in linea con i circa 4 anni del profilo"
+    - "Buona conoscenza dell'inglese richiesta (ha C1); nessun secondo requisito linguistico"
+
+esito: valutato
+note: "Fit sui contenuti (BC + AI adoption) molto solido, ma la RAL offerta è chiaramente sotto il floor dichiarato (45k): materiali non pre-generati, valutazione sola in attesa di decisione umana su un eventuale negoziale."

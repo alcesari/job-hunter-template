@@ -1,0 +1,23 @@
+meta:
+  data_valutazione: "2026-08-14"
+  ruolo: Data Engineer
+  azienda: Levy Professionals
+  location: Zeist, Paesi Bassi
+  link: "https://www.linkedin.com/jobs/view/4453137265/"
+  sorgente: linkedin_alert
+  intento: data-engineering-bi-eu
+
+valutazione:
+  score: parziale
+  match:
+    - "Titolo del ruolo (Data Engineer) compatibile con il profilo e con l'intento di ricerca"
+  gaps:
+    - gap: "Nessuna job description disponibile: l'alert LinkedIn riporta solo titolo, azienda e località, senza testo dell'annuncio"
+      peso: critico
+      nota: "Impossibile verificare stack tecnico richiesto, seniority reale, requisiti linguistici o retribuzione — vale la stessa limitazione nota per gli alert LinkedIn senza descrizione"
+  considerazioni:
+    - "Azienda di staffing/recruiting (Levy Professionals): il ruolo è probabilmente per un cliente non nominato"
+    - "Da aprire su LinkedIn per leggere il testo completo prima di qualunque decisione"
+
+esito: valutato
+note: "Valutazione limitata dalla mancanza di JD nell'alert. Non idoneo a generazione materiali finché non si legge l'annuncio completo."

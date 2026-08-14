@@ -1,0 +1,24 @@
+id: w-hunt-espana-data-engineer-2026-08
+status: pending
+company: W Hunt España
+role: Data Engineer
+location: Spagna
+source: linkedin_alert
+position_id: w-hunt-espana:data-engineer:spagna
+sources:
+  - fonte: linkedin_alert
+    annuncio_id: "linkedin_alert:w-hunt-espana:data-engineer:spagna"
+    jd: "https://www.linkedin.com/jobs/view/4451403209/"
+    apply_url: "https://www.linkedin.com/jobs/view/4451403209/"
+    fetched_at: "2026-08-14T12:42:23Z"
+primary_source: linkedin_alert
+preferred_apply_channel: linkedin_alert
+possible_duplicate_of: null
+intent_id: data-engineering-bi-eu
+annuncio_id: "linkedin_alert:w-hunt-espana:data-engineer:spagna"
+links:
+  jd: "https://www.linkedin.com/jobs/view/4451403209/"
+score: parziale
+materials_generated: false
+materials_flagged: false
+run_id: "2026-08-14T12:42:23Z"

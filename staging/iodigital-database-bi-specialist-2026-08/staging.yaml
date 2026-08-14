@@ -1,0 +1,24 @@
+id: iodigital-database-bi-specialist-2026-08
+status: pending
+company: iodigital
+role: Database & BI Specialist
+location: Madrid, Spagna
+source: indeed
+position_id: iodigital:database-bi-specialist:madrid-madrid-provincia
+sources:
+  - fonte: indeed
+    annuncio_id: "indeed:iodigital:database-bi-specialist:madrid-madrid-provincia"
+    jd: "https://to.indeed.com/aaxljnj7jlvw"
+    apply_url: "https://to.indeed.com/aaxljnj7jlvw"
+    fetched_at: "2026-08-14T12:42:23Z"
+primary_source: indeed
+preferred_apply_channel: indeed
+possible_duplicate_of: null
+intent_id: data-engineering-bi-eu
+annuncio_id: "indeed:iodigital:database-bi-specialist:madrid-madrid-provincia"
+links:
+  jd: "https://to.indeed.com/aaxljnj7jlvw"
+score: parziale
+materials_generated: false
+materials_flagged: false
+run_id: "2026-08-14T12:42:23Z"

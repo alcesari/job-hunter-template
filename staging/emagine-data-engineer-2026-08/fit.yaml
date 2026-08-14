@@ -1,0 +1,24 @@
+meta:
+  data_valutazione: "2026-08-14"
+  ruolo: Data Engineer
+  azienda: emagine
+  location: Bruxelles, Belgio
+  link: "https://www.linkedin.com/jobs/view/4451903023/"
+  sorgente: linkedin_alert
+  intento: data-engineering-bi-eu
+
+valutazione:
+  score: parziale
+  match:
+    - "Titolo del ruolo (Data Engineer) compatibile con il profilo e con l'intento di ricerca"
+  gaps:
+    - gap: "Nessuna job description disponibile dall'alert LinkedIn: solo titolo, azienda e località"
+      peso: critico
+      nota: "Impossibile verificare stack tecnico, seniority, lingua richiesta (in Belgio frequente il francese/olandese come requisito) o retribuzione"
+  considerazioni:
+    - "emagine è una società di consulenza IT/staffing: il ruolo è probabilmente per un cliente non nominato"
+    - "In Belgio la lingua di lavoro può essere francese o olandese a seconda del cliente/sede: da verificare esplicitamente, dato che il profilo non parla né l'una né l'altra"
+    - "Da aprire su LinkedIn per leggere il testo completo prima di qualunque decisione"
+
+esito: valutato
+note: "Valutazione limitata dalla mancanza di JD; rischio linguistico non verificabile da titolo/azienda/località soli, data la sede belga."

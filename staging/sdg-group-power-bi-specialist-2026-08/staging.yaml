@@ -1,0 +1,24 @@
+id: sdg-group-power-bi-specialist-2026-08
+status: pending
+company: SDG Group
+role: Power BI Specialist
+location: Madrid, Spagna (ibrido, possibile full remoto in Spagna)
+source: indeed
+position_id: sdg-group:power-bi-specialist:madrid-madrid-provincia
+sources:
+  - fonte: indeed
+    annuncio_id: "indeed:sdg-group:power-bi-specialist:madrid-madrid-provincia"
+    jd: "https://to.indeed.com/aa4mfmcl2mzm"
+    apply_url: "https://to.indeed.com/aa4mfmcl2mzm"
+    fetched_at: "2026-08-14T12:42:23Z"
+primary_source: indeed
+preferred_apply_channel: indeed
+possible_duplicate_of: null
+intent_id: data-engineering-bi-eu
+annuncio_id: "indeed:sdg-group:power-bi-specialist:madrid-madrid-provincia"
+links:
+  jd: "https://to.indeed.com/aa4mfmcl2mzm"
+score: buono
+materials_generated: true
+materials_flagged: false
+run_id: "2026-08-14T12:42:23Z"

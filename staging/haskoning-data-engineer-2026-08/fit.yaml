@@ -1,0 +1,30 @@
+meta:
+  data_valutazione: "2026-08-14"
+  ruolo: Data Engineer
+  azienda: HASKONING
+  location: Amersfoort, Paesi Bassi
+  link: "https://to.indeed.com/aabzpnkwwkt2"
+  sorgente: indeed
+  intento: data-engineering-bi-eu
+
+valutazione:
+  score: parziale
+  match:
+    - "Solide basi Python/SQL e esperienza di piattaforma dati cloud (PoC Microsoft Fabric vs GCP/BigQuery in Earth Energy) rilevanti per il ruolo di data integration layer"
+    - "Esperienza pregressa di lavoro con più stakeholder aziendali per tradurre esigenze in soluzioni dati (Business Central, BI trading desk)"
+  gaps:
+    - gap: "L'annuncio richiede esplicitamente residenza attuale nei Paesi Bassi o un permesso di soggiorno olandese valido"
+      peso: critico
+      nota: "Il profilo vive a Milano; il diritto al lavoro UE non soddisfa questo requisito specifico del datore di lavoro, che è un vincolo pratico più stringente della sola cittadinanza/diritto al lavoro"
+    - gap: "Richiesti 5-7 anni di esperienza in data engineering/integrazione/piattaforme cloud"
+      peso: rilevante
+      nota: "Sopra il range dichiarato nell'intento (seniority 'medio', 2-5 anni) e sopra i circa 4 anni del profilo"
+    - gap: "Richiesta almeno una certificazione riconosciuta in cloud data engineering"
+      peso: marginale
+      nota: "Nessuna certificazione cloud nel master-profile (certificazioni: [])"
+  considerazioni:
+    - "Pacchetto retributivo molto competitivo (4.249–6.981 EUR lordi/mese, ~51-84k annuo) — ben sopra l'aspettativa, ma irrilevante se il requisito di residenza blocca la candidatura"
+    - "Ruolo con ampio scopo (data integration layer aziendale), profilo più senior di quanto l'intento target descriva"
+
+esito: valutato
+note: "Il requisito di residenza NL attuale è un blocco pratico all'idoneità immediata, a prescindere dal fit tecnico; seniority richiesta anche superiore al target dell'intento."
