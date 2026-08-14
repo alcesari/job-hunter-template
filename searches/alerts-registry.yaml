@@ -1,0 +1,102 @@
+schema_version: 1
+
+alerts:
+  - ricerca_id: "data-engineering-bi-eu:linkedin_alert:data-engineer-or-data-integration-engineer-or-etl-developer:103350119"
+    intent_id: data-engineering-bi-eu
+    piattaforma: linkedin
+    etichetta: "Data Engineer — Italia"
+    keywords: '"Data Engineer" OR "Data Integration Engineer" OR "ETL Developer"'
+    geoId: "103350119"
+    area: Italia
+    stato: attivo
+    creato: "2026-08-14"
+
+  - ricerca_id: "data-engineering-bi-eu:linkedin_alert:data-engineer-or-data-integration-engineer-or-etl-developer:105646813"
+    intent_id: data-engineering-bi-eu
+    piattaforma: linkedin
+    etichetta: "Data Engineer — Spagna"
+    keywords: '"Data Engineer" OR "Data Integration Engineer" OR "ETL Developer"'
+    geoId: "105646813"
+    area: Spagna
+    stato: attivo
+    creato: "2026-08-14"
+
+  - ricerca_id: "data-engineering-bi-eu:linkedin_alert:data-engineer-or-data-integration-engineer-or-etl-developer:100565514"
+    intent_id: data-engineering-bi-eu
+    piattaforma: linkedin
+    etichetta: "Data Engineer — Belgio"
+    keywords: '"Data Engineer" OR "Data Integration Engineer" OR "ETL Developer"'
+    geoId: "100565514"
+    area: Belgio
+    stato: attivo
+    creato: "2026-08-14"
+
+  - ricerca_id: "data-engineering-bi-eu:linkedin_alert:data-engineer-or-data-integration-engineer-or-etl-developer:102890719"
+    intent_id: data-engineering-bi-eu
+    piattaforma: linkedin
+    etichetta: "Data Engineer — Paesi Bassi"
+    keywords: '"Data Engineer" OR "Data Integration Engineer" OR "ETL Developer"'
+    geoId: "102890719"
+    area: Paesi Bassi
+    stato: attivo
+    creato: "2026-08-14"
+
+  - ricerca_id: "data-engineering-bi-eu:linkedin_alert:data-engineer-or-data-integration-engineer-or-etl-developer:91000000"
+    intent_id: data-engineering-bi-eu
+    piattaforma: linkedin
+    etichetta: "Data Engineer — Unione Europea (altri paesi)"
+    keywords: '"Data Engineer" OR "Data Integration Engineer" OR "ETL Developer"'
+    geoId: "91000000"
+    area: "Unione Europea (altri paesi)"
+    stato: attivo
+    creato: "2026-08-14"
+
+  - ricerca_id: "data-engineering-bi-eu:linkedin_alert:bi-specialist-or-bi-developer-or-business-intelligence-analyst:103350119"
+    intent_id: data-engineering-bi-eu
+    piattaforma: linkedin
+    etichetta: "BI Specialist — Italia"
+    keywords: '"BI Specialist" OR "BI Developer" OR "Business Intelligence Analyst"'
+    geoId: "103350119"
+    area: Italia
+    stato: attivo
+    creato: "2026-08-14"
+
+  - ricerca_id: "data-engineering-bi-eu:linkedin_alert:bi-specialist-or-bi-developer-or-business-intelligence-analyst:105646813"
+    intent_id: data-engineering-bi-eu
+    piattaforma: linkedin
+    etichetta: "BI Specialist — Spagna"
+    keywords: '"BI Specialist" OR "BI Developer" OR "Business Intelligence Analyst"'
+    geoId: "105646813"
+    area: Spagna
+    stato: attivo
+    creato: "2026-08-14"
+
+  - ricerca_id: "data-engineering-bi-eu:linkedin_alert:bi-specialist-or-bi-developer-or-business-intelligence-analyst:100565514"
+    intent_id: data-engineering-bi-eu
+    piattaforma: linkedin
+    etichetta: "BI Specialist — Belgio"
+    keywords: '"BI Specialist" OR "BI Developer" OR "Business Intelligence Analyst"'
+    geoId: "100565514"
+    area: Belgio
+    stato: attivo
+    creato: "2026-08-14"
+
+  - ricerca_id: "data-engineering-bi-eu:linkedin_alert:bi-specialist-or-bi-developer-or-business-intelligence-analyst:102890719"
+    intent_id: data-engineering-bi-eu
+    piattaforma: linkedin
+    etichetta: "BI Specialist — Paesi Bassi"
+    keywords: '"BI Specialist" OR "BI Developer" OR "Business Intelligence Analyst"'
+    geoId: "102890719"
+    area: Paesi Bassi
+    stato: attivo
+    creato: "2026-08-14"
+
+  - ricerca_id: "data-engineering-bi-eu:linkedin_alert:bi-specialist-or-bi-developer-or-business-intelligence-analyst:91000000"
+    intent_id: data-engineering-bi-eu
+    piattaforma: linkedin
+    etichetta: "BI Specialist — Unione Europea (altri paesi)"
+    keywords: '"BI Specialist" OR "BI Developer" OR "Business Intelligence Analyst"'
+    geoId: "91000000"
+    area: "Unione Europea (altri paesi)"
+    stato: attivo
+    creato: "2026-08-14"

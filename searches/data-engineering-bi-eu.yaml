@@ -46,8 +46,8 @@ fonti:
     attiva: true
     note: ""
   - nome: linkedin_alert
-    attiva: false
-    note: "Da attivare dopo la configurazione dell'alert (job-alert-config)"
+    attiva: true
+    note: "10 alert configurati (2 ruoli x 5 location), vedi searches/alerts-registry.yaml"
   - nome: indeed_alert
     attiva: false
-    note: "Da attivare dopo la configurazione dell'alert (job-alert-config)"
+    note: "Non usato: coperto dalla ricerca diretta Indeed (fonte 'indeed')"
