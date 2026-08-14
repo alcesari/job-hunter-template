@@ -1,0 +1,14 @@
+esclusioni:
+  titoli_da_escludere: [Head of, Director, VP, C-level]
+  eccezione_se_ambiguo: true
+  tipo_contratto_da_escludere: [Internship, Traineeship, Stage]
+
+lingue_annuncio:
+  accettate: [Italiano, Inglese]
+  escluse_se_prevalenti: [Spagnolo, Olandese, Francese, Tedesco]
+  escluse_se_obbligatorie: [Spagnolo, Olandese, Francese, Tedesco]
+  tollerate_se_facoltative: [Spagnolo, Olandese, Francese, Tedesco]
+
+parametri_esecuzione:
+  finestra_temporale_ore: 48
+  max_annunci_per_esecuzione: 15

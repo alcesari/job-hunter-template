@@ -1,0 +1,53 @@
+id: data-engineering-bi-eu
+nome: "Data Engineering & BI Specialist in Europa"
+stato: attivo
+creato: "2026-08-14"
+
+ruoli_target:
+  - titolo_principale: Data Engineer
+    sinonimi: [Data Integration Engineer, ETL Developer]
+  - titolo_principale: BI Specialist
+    sinonimi: [BI Developer, Business Intelligence Analyst, BI Engineer]
+
+location_target:
+  - area: Italia
+    accetta_remoto: true
+    accetta_ibrido: true
+    priorita: alta
+  - area: Spagna
+    accetta_remoto: true
+    accetta_ibrido: true
+    priorita: alta
+  - area: Belgio
+    accetta_remoto: true
+    accetta_ibrido: true
+    priorita: alta
+  - area: Paesi Bassi
+    accetta_remoto: true
+    accetta_ibrido: true
+    priorita: alta
+  - area: Unione Europea (altri paesi)
+    accetta_remoto: true
+    accetta_ibrido: true
+    priorita: media
+
+seniority:
+  livello: medio
+  anni_esperienza_min: 2
+  anni_esperienza_max: 5
+  note: "Non ancora senior; ~4 anni di esperienza professionale continuativa in ambito dati"
+
+settori:
+  target: []
+  esclusi: []
+
+fonti:
+  - nome: indeed
+    attiva: true
+    note: ""
+  - nome: linkedin_alert
+    attiva: false
+    note: "Da attivare dopo la configurazione dell'alert (job-alert-config)"
+  - nome: indeed_alert
+    attiva: false
+    note: "Da attivare dopo la configurazione dell'alert (job-alert-config)"

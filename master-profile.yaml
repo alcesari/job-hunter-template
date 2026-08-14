@@ -1,0 +1,192 @@
+anagrafica:
+  nome: Alberto Cesari
+  email: al.cesari97@gmail.com
+  telefono: "+39 380 682 6675"
+  location_attuale: Milano
+  cittadinanza: [italiana]
+  diritto_al_lavoro:
+    - area: UE
+      stato: si
+  disponibilita_trasferimento: si
+  aree_trasferimento_ok: []
+  disponibilita_remoto: indifferente
+  preavviso:
+    durata: "20 giorni"
+    note: ""
+  link_esterni:
+    sito_personale: ""
+    linkedin: "https://www.linkedin.com/in/alberto-cesari-37b2b9107/"
+    github: ""
+    portfolio: ""
+
+retribuzione:
+  attuale:
+    valore: 38000
+    valuta: EUR
+    lordo_netto: lordo
+    periodicita: annuo
+  aspettativa:
+    valore_min: 45000
+    valore_max: 55000
+    valuta: EUR
+    lordo_netto: lordo
+    periodicita: annuo
+  flessibilita: ""
+
+esperienze:
+  - azienda: Earth Energy Srl
+    ruolo: IT and Digital Solutions Manager
+    settore: energy trading
+    periodo:
+      da: "2026-01"
+      a: presente
+    durata_mesi: 7
+    tipo_ruolo: management
+    descrizione: >-
+      Unico riferimento IT dell'azienda, con responsabilità end-to-end su
+      data engineering, applicazioni di business e infrastruttura. Sviluppa
+      pipeline dati e script Python per l'operatività quotidiana (market
+      data, position management). Ha contribuito al design e allo sviluppo
+      della piattaforma di business intelligence per il desk di trading
+      finanziario (modellazione e analisi dati su dashboard Streamlit).
+      Ownership funzionale (non tecnica) di Business Central, con
+      coordinamento di consulenti esterni su implementazione,
+      customizzazione, integrazioni API e data ingestion. Guida un PoC in
+      corso tra Microsoft Fabric e Google Cloud Platform per sostituire il
+      reporting basato su Excel. Ha guidato da zero l'adozione AI
+      aziendale.
+    stack_e_strumenti: [Python, SQL, Business Central, Microsoft Fabric, Google Cloud Platform, BigQuery, Streamlit, Claude]
+    responsabilita:
+      - Ownership IT e infrastruttura dati
+      - Sviluppo pipeline dati e automazioni Python
+      - Design e sviluppo piattaforma BI per il desk di trading (Streamlit)
+      - Ownership funzionale Business Central e coordinamento consulenti esterni
+      - PoC piattaforma dati (Microsoft Fabric vs GCP)
+      - Guida dell'adozione AI aziendale
+    risultati_quantificabili:
+      - "Da licenze Copilot mai utilizzate a primi agent Claude rilasciati e usati regolarmente nei processi aziendali"
+
+  - azienda: GFT Technologies Srl
+    ruolo: Junior Data Integration and BI Developer
+    settore: consulenza IT
+    periodo:
+      da: "2023-04"
+      a: "2025-12"
+    durata_mesi: 33
+    tipo_ruolo: individuale_tecnico
+    descrizione: >-
+      Primo lavoro a contratto. Tre progetti sullo stesso cliente bancario
+      tier-1 (anonimo): due progetti ETL su IBM DataStage, Teradata e
+      Hadoop (interrogato anche con Hive) — sviluppo e manutenzione dei
+      software ETL a 360°: definizione dei requisiti tecnici, stesura della
+      documentazione funzionale (AFU), controlli di data quality (census/
+      mapping), sviluppo di job DataStage e relativa schedulazione (tool
+      interno del cliente "Jade", TWS/IBM Tivoli Workload Scheduler come
+      orchestratore), costruzione di viste SQL complesse, e attività di
+      CI/CD e IAM con strumenti interni del cliente (portale di
+      autorizzazione, tool di gestione rilasci); in alcuni task ha inoltre
+      supervisionato e guidato il lavoro di colleghi neo-assunti, fornendo
+      la formazione tecnica di base per il progetto. Un progetto separato
+      di business intelligence su GCP (Looker/LookML, BigQuery), che ha
+      incluso un task di performance tuning.
+    stack_e_strumenti: [IBM DataStage, Teradata, Hadoop, Hive, Google BigQuery, Looker, LookML, TWS, Jade, SQL]
+    responsabilita:
+      - Sviluppo e manutenzione ETL a 360° (DataStage, Teradata, Hadoop/Hive)
+      - Definizione requisiti tecnici e documentazione funzionale (AFU)
+      - Controlli data quality (census/mapping)
+      - Sviluppo job DataStage e schedulazione (Jade, TWS)
+      - Costruzione viste SQL complesse
+      - CI/CD e IAM con strumenti interni del cliente
+      - Supervisione e formazione tecnica di colleghi neo-assunti (progetti ETL)
+      - Sviluppo dashboard Looker/LookML per stakeholder C-level (progetto BI)
+      - Performance tuning viste BigQuery (progetto BI)
+    risultati_quantificabili:
+      - "Refactoring della vista BigQuery della dashboard di data quality: tempo di rendering ridotto da oltre 10 minuti a meno di 1 minuto"
+      - "Nei progetti ETL, ha supervisionato e guidato il lavoro di colleghi neo-assunti, occupandosi della loro formazione tecnica di base sul progetto"
+
+  - azienda: Workinvoice
+    ruolo: Product Development Intern
+    settore: fintech
+    periodo:
+      da: "2022-09"
+      a: "2023-03"
+    durata_mesi: 7
+    tipo_ruolo: individuale_tecnico
+    descrizione: >-
+      Supporto allo sviluppo prodotto (feature design, requirement
+      analysis, coordinamento con team tecnici), supporto onboarding
+      partner, mappatura e ottimizzazione processi operativi, automazioni
+      CRM (HubSpot) per processi di invoice trading.
+    stack_e_strumenti: [HubSpot]
+    responsabilita:
+      - Sviluppo prodotto e requirement analysis
+      - Partner onboarding
+      - Automazioni CRM HubSpot
+    risultati_quantificabili: []
+
+  - azienda: Summer Sensation Festival
+    ruolo: Co-Founder
+    settore: musica/eventi
+    periodo:
+      da: "2015-01"
+      a: "2022-12"
+    durata_mesi: 96
+    tipo_ruolo: management
+    descrizione: >-
+      Attività parallela (non a tempo pieno). Budgeting e pianificazione
+      finanziaria, fundraising, negoziazione sponsor e fornitori,
+      supervisione logistica e produzione evento.
+    stack_e_strumenti: [Excel, PowerPoint, Google Suite]
+    responsabilita:
+      - Budgeting e fundraising
+      - Negoziazione sponsor e fornitori
+      - Logistica e produzione evento
+    risultati_quantificabili:
+      - "Edizione 2022: oltre 10.000 partecipanti, artisti tra cui Elodie Di Patrizi, partnership con Comune di Lecce, PugliaPromozione e CONI Puglia"
+
+progetti: []
+
+skill_tecniche:
+  linguaggi_programmazione: [SQL, Python]
+  piattaforme_e_tool: [BigQuery, Looker, LookML, Dataform, Google Cloud Platform, Cloud Run, Cloud Functions, Microsoft Fabric, Power BI, Business Central, IBM DataStage, Teradata, Hadoop, Hive, HubSpot, Microsoft 365, Streamlit, TWS, Jade]
+  livello_per_skill: []
+
+strato_ai_adoption:
+  tool_ai_usati: [Claude]
+  contesti_uso: [adozione AI aziendale, change management, workflow agentici/MCP, sviluppo soluzioni AI per sé e per altri]
+  livello_autonomia: costruisce_soluzioni_ai_per_altri
+  note: >-
+    Ha guidato l'adozione AI in Earth Energy da zero: sostituzione di
+    licenze Copilot mai utilizzate con agent Claude rilasciati e usati
+    regolarmente nei processi aziendali; costruisce soluzioni AI sia per sé
+    sia per altri.
+
+lingue:
+  - lingua: Italiano
+    livello: madrelingua
+    contesto_uso: lavorativo quotidiano
+  - lingua: Inglese
+    livello: C1
+    contesto_uso: lavorativo quotidiano
+
+formazione:
+  - titolo: Master in Data Analytics for Business
+    istituto: Università Cattolica del Sacro Cuore, Milano
+    anno: "2022-2023"
+    rilevanza: "Media 26,5/30"
+  - titolo: Laurea in Ingegneria Gestionale (Management Engineering)
+    istituto: Politecnico di Milano
+    anno: "2017-2022"
+    rilevanza: "Voto 80/110"
+  - titolo: Diploma Accademico in Strumenti a Percussione
+    istituto: Conservatorio "Tito Schipa", Lecce
+    anno: "2008-2017"
+    rilevanza: "Voto 9/10"
+
+certificazioni: []
+
+preferenze_generali:
+  settori_preferiti: []
+  settori_da_evitare: []
+  dimensione_azienda_preferita: null
+  note_libere: "Nei CV generati includere sempre tutti i titoli di studio."
