@@ -17,8 +17,19 @@ Todoist fuori (D8), il digest è anche l'UNICO canale che fa emergere le
    (rete non sandboxata). Se l'ambiente espone una notifica push nativa,
    usala come segnale immediato aggiuntivo. Oggetto suggerito:
    `Job Hunter — digest <YYYY-MM-DD> (<N> nuove, <M> in scadenza)`.
+   **Corpo della bozza — regola non ambigua (bug ricorrente, verificato
+   2026-08-20):** il body passato a `create_draft` DEVE essere il contenuto
+   letterale di `digests/<YYYY-MM-DD>.md` appena scritto — stesso markdown,
+   stesse sezioni 1-6, stesso link `[JD](...)` per ogni offerta. Copialo,
+   non ricomporlo: **non riassumere, non condensare, non parafrasare, non
+   omettere i link**. "Stesso contenuto dell'email" (sotto) non è una
+   descrizione approssimativa: è un vincolo letterale sul body della bozza.
+   Una bozza più breve del file, o priva anche di un solo link JD, è una
+   run che ha violato questo contratto — non una variante accettabile.
 2. **File nel repo** — `digests/<YYYY-MM-DD>.md`: il record durevole, versionato,
-   sfogliabile anche da GitHub mobile. Stesso contenuto dell'email.
+   sfogliabile anche da GitHub mobile. Stesso contenuto dell'email (vedi
+   vincolo letterale sopra: non è un principio generico, guida cosa scrivere
+   nel body di `create_draft` passo per passo).
 
 Se più run cadono nello stesso giorno, il file è `digests/<YYYY-MM-DD>-<HHMM>.md`.
 
