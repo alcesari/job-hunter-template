@@ -628,6 +628,18 @@ sezione anomalie del digest. In ogni caso la copia autorevole è il file
 `digests/<YYYY-MM-DD>.md` nel repo — Gmail (bozza) è solo un canale di
 notifica aggiuntivo, non l'unico: valuta anche una notifica push nativa se
 l'ambiente la espone (osservato funzionante nella run del 2026-07-08).
+**Body della bozza — sequenza obbligatoria, non un principio da ricordare
+(bug ricorrente, verificato 2026-08-20 e recidivo il 2026-08-22 nonostante
+un primo avviso testuale in `references/digest-schema.md`)**: prima di
+chiamare `create_draft`, **rileggi** `digests/<YYYY-MM-DD>.md` col tool
+Read e passa **esattamente il contenuto restituito da quella lettura**
+come `body`. Non comporre il body dalla tua ricostruzione della run
+(memoria del contesto accumulato finora): la fonte del body è l'output del
+Read, non la tua sintesi. Se il body che stai per mandare a `create_draft`
+non è, carattere per carattere, ciò che il Read ha appena restituito —
+fermati e rileggi il file, non procedere con una versione "equivalente".
+Una bozza più corta del file, o priva anche di un solo link `[JD](...)`,
+significa che questo passo è stato saltato.
 **Chiusura del ledger**: appendi a `source-log/runs.jsonl` la riga di end
 (`fase:"end"`, `esito` `ok`/`parziale` + `note` sulle degradazioni) e includila
 nel commit finale. Il digest dichiara la **prossima run attesa** (vedi
