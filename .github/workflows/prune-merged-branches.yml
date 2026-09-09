@@ -1,0 +1,73 @@
+name: prune-merged-branches
+
+# Cancella i branch di sessione gia' contenuti in main.
+#
+# PERCHE' ESISTE
+# --------------
+# I branch `claude/*` non li crea la routine job-watch: li crea la PIATTAFORMA
+# (Claude Code on the web) quando pubblica le modifiche di una sessione, con un
+# nome derivato dalla sessione. Verificato dal reflog di una sessione reale:
+# l'ambiente fa `fetch origin main` e poi `checkout -b claude/<nome>` in LOCALE;
+# il ref remoto compare al momento della pubblicazione.
+#
+# Ne segue che nessuno script che gira DENTRO la sessione puo' impedirne la
+# nascita — `scripts/publish_run.sh` garantisce che il lavoro atterri su `main`
+# (quindi che quei branch siano vuoti e non lavoro perso), non che non esistano.
+# Questo workflow chiude il cerchio dall'esterno: e' l'unico punto da cui la
+# probabilita' di trovarsi un branch nuovo la mattina dopo va davvero a zero.
+#
+# SICUREZZA: cancella SOLO branch il cui commit di testa e' gia' un antenato di
+# main. Un branch con lavoro non ancora mergiato non viene mai toccato — se ne
+# trovi uno sopravvissuto, e' perche' contiene qualcosa che main non ha.
+
+on:
+  create:                     # scatta appena un branch viene creato
+  push:
+    branches: [main]          # e a ogni avanzamento di main
+  schedule:
+    - cron: '17 5 * * *'      # rete di sicurezza giornaliera (05:17 UTC)
+  workflow_dispatch:          # esecuzione manuale
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prune-merged-branches
+  cancel-in-progress: false
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout completo (serve la storia per il test di antenato)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cancella i branch claude/* gia' contenuti in main
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin '+refs/heads/*:refs/remotes/origin/*'
+          MAIN=$(git rev-parse origin/main)
+          cancellati=0; tenuti=0
+
+          for ref in $(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin/claude); do
+            sha=$(git rev-parse "origin/$ref")
+            if git merge-base --is-ancestor "$sha" "$MAIN"; then
+              echo "cancello  $ref ($sha)"
+              git push origin --delete "$ref"
+              cancellati=$((cancellati+1))
+            else
+              echo "TENGO     $ref ($sha) — contiene lavoro non in main"
+              tenuti=$((tenuti+1))
+            fi
+          done
+
+          echo "---"
+          echo "cancellati: $cancellati — tenuti perche' non mergiati: $tenuti"
+          {
+            echo "### prune-merged-branches"
+            echo ""
+            echo "- branch cancellati (gia' in \`main\`): **$cancellati**"
+            echo "- branch tenuti (lavoro non ancora in \`main\`): **$tenuti**"
+          } >> "$GITHUB_STEP_SUMMARY"

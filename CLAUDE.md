@@ -85,8 +85,17 @@ Eccezione dichiarata: `PIPELINE.md` è co-scritto (lo rigenera anche
 `application-tracker` su richiesta) — chi lo tocca lo rigenera SEMPRE
 integralmente da `applications/`, mai merge manuale; in conflitto vince la
 rigenerazione più recente. Mai fonte di verità.
-Enforcement D5: `.claude/settings.json` (committato) allowlista git, lo script
-del digest e le scritture sui soli path operativi; i tool MCP dei connettori
+Pubblicazione: la routine non compone mai comandi git a mano — usa
+`scripts/publish_run.sh` (`reconcile` all'avvio, `publish` a ogni checkpoint),
+che mette in staging i soli path operativi, atterra su `main` con retry e, se
+proprio non ci riesce, su UN branch fisso `routine/job-watch` che la
+`reconcile` successiva recupera. Nasce dall'incidente 2026-08-18 → 2026-09-05:
+10 run mai atterrate su `main` e 125 chiavi di dedup perse perché il passo di
+pubblicazione era improvvisato dal modello a ogni giro.
+Enforcement D5: `.claude/settings.json` (committato) allowlista
+`publish_run.sh` (e NON `git add`/`commit`/`push`: la logica git sta dentro lo
+script, quindi la superficie concessa si restringe), git in sola lettura, gli
+script e le scritture sui soli path operativi; i tool MCP dei connettori
 (Gmail/Indeed) hanno ID legati all'account — dove presenti in allowlist la
 routine li usa senza conferma, in un clone fresco vanno approvati al
 collegamento — così la routine gira senza conferme umane. La rete di sicurezza è l'hook

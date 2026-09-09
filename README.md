@@ -33,7 +33,7 @@ Full documentation below, in English and Italian.
 
 1. **Clone this branch** and open it in **Claude Code Desktop**:
    ```bash
-   git clone --branch template <your-fork-url> job-hunter
+   git clone <your-fork-url> job-hunter
    ```
    Tip: create your **own private repository** from the template (see
    *Privacy* below) and clone that instead.
@@ -81,7 +81,7 @@ job-hunter/
 ├─ staging/              # pre-processed offers awaiting review (empty)
 ├─ digests/              # generated digests (empty in the template)
 ├─ cv-facts.example.yaml # seed for cv-facts.yaml (truthfulness gate config)
-├─ scripts/              # utilities (digest delivery, career pages, truthfulness gate, liveness)
+├─ scripts/              # utilities (run publishing, digest delivery, career pages, truthfulness gate, liveness)
 ├─ docs/                 # runbooks and notes (GDPR deletion, threat model)
 ├─ .claude/skills/       # the system's skills
 └─ CLAUDE.md             # persistent context for the agent
@@ -159,7 +159,7 @@ Desktop, repo-first application tracker.
 
 1. **Clona questo branch** e aprilo in **Claude Code Desktop**:
    ```bash
-   git clone --branch template <url-del-tuo-fork> job-hunter
+   git clone <url-del-tuo-fork> job-hunter
    ```
    Consiglio: crea un **tuo repository privato** dal template (vedi *Privacy*
    più sotto) e clona quello.
@@ -206,7 +206,7 @@ job-hunter/
 ├─ staging/              # offerte pre-lavorate in attesa di revisione (vuota)
 ├─ digests/              # digest generati (vuota nel template)
 ├─ cv-facts.example.yaml # seed per cv-facts.yaml (config del gate di veridicità)
-├─ scripts/              # utility (consegna digest, career page, gate veridicità, liveness)
+├─ scripts/              # utility (pubblicazione run, consegna digest, career page, gate veridicità, liveness)
 ├─ docs/                 # runbook e note (cancellazione GDPR, modello di minaccia)
 ├─ .claude/skills/       # le skill del sistema
 └─ CLAUDE.md             # contesto permanente per l'agente

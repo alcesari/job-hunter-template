@@ -43,18 +43,36 @@ umana promuove la candidatura (allora è una sessione interattiva a scriverle).
   osservazione reale (frequenza effettiva delle run via `runs.jsonl`, rumore
   prodotto) — non un cambiamento operativo imposto qui.
 - **Disciplina push**: la routine cloud vede solo lo stato committato *e
-  pushato*. All'inizio di ogni run fai `git pull` (da `main`); alla fine committa
-  e pusha. Una modifica ai profili fatta in chat ma non pushata è invisibile alla run.
-- **Il commit deve ATTERRARE SU `main`** (non su un branch orfano). `state.json`
-  è il dedup: se la telemetria di una run resta su un branch non mergiato, il giro
-  successivo riparte da uno stato vecchio e ri-propone le stesse offerte. Lo strato
-  operativo è append-only e non richiede revisione umana, quindi il percorso a zero
-  conferme è il **push diretto su `main`** (coperto dall'allowlist — vedi sezione
-  autonomia sotto). PR+auto-merge NON è il percorso di default: richiederebbe `gh`,
-  che non è (volutamente) allowlistato. Usalo solo se l'ambiente cloud ti impone di
-  lavorare su un branch di servizio e non concede push diretto su `main`; in quel
-  caso abilita l'auto-merge della PR nella config della routine (l'alternativa,
-  lasciare il branch non mergiato, romperebbe il dedup del giro successivo).
+  pushato*. Una modifica ai profili fatta in chat ma non pushata è invisibile alla run.
+- **La pubblicazione NON è una tua decisione: è `scripts/publish_run.sh`.**
+  Non comporre a mano sequenze di `git add`/`commit`/`push`/`merge` — l'allowlist
+  non te le concede più, e non è una limitazione ma il fix di un incidente reale
+  (vedi sotto). Due sole invocazioni, sempre le stesse:
+
+  ```bash
+  bash scripts/publish_run.sh reconcile                    # passo 1, prima di tutto
+  bash scripts/publish_run.sh publish "<messaggio>"        # a ogni checkpoint
+  ```
+
+  `publish` mette in staging **solo** lo strato operativo, committa, e porta il
+  lavoro su `main` con retry; se `main` è avanzata nel frattempo la mergia e
+  ritenta da sola. `reconcile` recupera le run che non fossero atterrate.
+- **Incidente 2026-08-18 → 2026-09-05 (perché lo script esiste)**: la routine
+  *poteva* pushare su `main` — lo ha fatto in circa metà delle run. Il difetto
+  non era il permesso: era che il passo di pubblicazione veniva **improvvisato
+  a ogni giro**, a volte push diretto, a volte branch + PR mai mergiata, con
+  commit rifatti (su `main` restano commit gemelli con lo *stesso tree*: la
+  firma di un push andato storto e ritentato a mano). Esito: **10 run mai
+  atterrate su `main`, 125 chiavi di dedup perse**, e un'auto-riparazione
+  agganciata alle **PR aperte** che mancava sistematicamente le run rimaste
+  solo come branch. Morale generalizzabile: dove un passo ha una risposta
+  giusta sempre uguale, il giudizio del modello è il difetto, non la feature.
+- **Esito atteso**: `publish` esce `0` (atterrato su `main`). Un exit `4`
+  significa che il lavoro è su `routine/job-watch`, **un branch fisso** che la
+  `reconcile` del giro successivo recupera per costruzione: segnalalo nel digest
+  come anomalia, ma non è una run persa e non è un motivo per fallire. Un exit
+  `2` è un conflitto **fuori** dallo strato operativo: non tentare di risolverlo,
+  segnalalo — è materia di una sessione interattiva.
 
 ## Autonomia della run (zero conferme umane) e enforcement D5
 
@@ -63,8 +81,14 @@ conferma**, in sessione fresca (l'ambiente cloud non eredita alcun
 `settings.local.json`). Due pezzi la garantiscono, entrambi committati:
 
 1. **Allowlist in `.claude/settings.json`**: copre ESATTAMENTE le azioni di
-   questo contratto — git (`pull`/`add`/`commit`/`push` + `status`/`diff`/`log`,
-   più `git rm` scoped ai soli path operativi per la retention), `date`,
+   questo contratto — `scripts/publish_run.sh` (l'UNICA via per committare e
+   pubblicare: `git add`/`commit`/`push` **non sono più in allowlist**, la
+   logica git vive dentro lo script e i comandi lanciati da uno script non
+   passano dal gate dei permessi — quindi la superficie concessa alla routine
+   si è *ristretta*, non allargata), git in sola lettura
+   (`pull`/`status`/`diff`/`log`, più `git rm` scoped ai soli path operativi
+   per la retention: `git rm` mette in staging la cancellazione, sarà `publish`
+   a committarla), `date`,
    `python[3] scripts/send_digest.py`, i tool MCP Gmail
    (`list_labels`, `search_threads`, `get_thread`, `get_message`,
    `create_draft`) e Indeed (`search_jobs`, `get_job_details`) — questi ultimi
@@ -78,9 +102,11 @@ conferma**, in sessione fresca (l'ambiente cloud non eredita alcun
    della retention usa `git rm` nelle forme scoped (`git rm digests/…`,
    `git rm source-log/…`, `git rm -r staging/…`), MAI `rm`; invoca i comandi
    nella forma esatta documentata qui, dalla radice del repo. Il flusso di
-   pubblicazione a zero conferme è il **push diretto su `main`**: il flusso
-   alternativo PR+auto-merge richiederebbe `gh`, che non è (volutamente)
-   allowlistato.
+   pubblicazione a zero conferme è `scripts/publish_run.sh`, che mira a
+   **`main`** e ha come sola alternativa il branch fisso `routine/job-watch`
+   (recuperato dalla `reconcile` successiva). Il flusso PR+auto-merge **non
+   esiste più**: richiederebbe `gh`, che non è (volutamente) allowlistato, e
+   soprattutto è ciò che ha prodotto il backlog di run mai mergiate.
    **Liveness (passo 4-bis)**: `Bash(python[3] scripts/check_liveness.py *)` è
    in allowlist con lo stesso pattern degli altri script. **Non richiede domini
    nuovi**: contatta solo gli host già presenti in
@@ -291,7 +317,22 @@ offerte entrano solo via connettore o via email che le piattaforme già spingono
 ## Flusso della run
 
 ### 1. Setup
-`git pull`. Leggi `master-profile.yaml` e tutti i `searches/<id>.yaml` con
+**Primo comando della run, prima di qualsiasi lettura**:
+
+```bash
+bash scripts/publish_run.sh reconcile
+```
+
+Allinea a `origin/main` **e** recupera le run che non fossero atterrate (branch
+orfani, `routine/job-watch`), mergiando il loro strato operativo e ripubblicando
+su `main`. Riconosce i branch da recuperare dal **contenuto** — solo quelli che
+toccano esclusivamente path operativi — quindi non assorbe mai per sbaglio un
+branch che tocca il profilo. È idempotente: a regime stampa "nessuna run da
+recuperare" e costa nulla. Se esce non-zero, segnalalo nel digest e prosegui
+(non è un motivo per fermare la run: sostituisce il vecchio `git pull`, che
+qui non serve più).
+
+Leggi `master-profile.yaml` e tutti i `searches/<id>.yaml` con
 `stato: attivo` (più `searches/defaults.yaml`; applica gli `override` di ogni
 intento). Leggi `state.json` (gli `annuncio_id` già visti). Leggi
 `routine-config.yaml` (radice del repo, F5) per `gmail_label` — se il file
@@ -309,8 +350,12 @@ invariate; vedi la nota storica nel contratto del source-log).
 
 **Ledger delle run (osservabilità — primo atto dopo il pull)**: appendi a
 `source-log/runs.jsonl` la riga di start
-(`{"run_id":"<run_id>","fase":"start"}`) e **committa+pusha SUBITO, da sola**,
-prima di toccare qualsiasi fonte. È l'unico modo per cui una run morta a metà
+(`{"run_id":"<run_id>","fase":"start"}`) e pubblicala **SUBITO, da sola**,
+prima di toccare qualsiasi fonte:
+
+```bash
+bash scripts/publish_run.sh publish "job-watch: start run <run_id>"
+``` È l'unico modo per cui una run morta a metà
 lasci una traccia diagnosticabile: uno `start` senza `end` corrispondente =
 run fallita, visibile dal solo repo. In coda alla run (passo 8, dopo il digest)
 appendi la riga di end con l'esito
@@ -588,7 +633,8 @@ chiedi tu.
 ### 7. Telemetria (stesso commit)
 Appendi TUTTE le righe osservate (incluse scarti e dedup) a
 `source-log/<anno>-<mese>.jsonl` (crea il file del mese se non esiste). Aggiorna
-`state.json` con i nuovi `annuncio_id`. Committa telemetria + staging insieme:
+`state.json` con i nuovi `annuncio_id`. Pubblica telemetria + staging insieme
+(`bash scripts/publish_run.sh publish "job-watch: telemetria run <run_id>"`):
 nel repo unico la coerenza run↔log è quasi-atomica. Se la scrittura del
 source-log fallisce ma il resto è andato: non bloccare digest/stato, segnala
 l'anomalia nel digest (il log è telemetria, la pipeline è il prodotto).
@@ -600,7 +646,8 @@ Componi il digest (vedi contratto): offerte nuove valutate, cosa è in staging i
 attesa di revisione, **scadenze** da `applications/*/application.yaml`
 (`next_action.due`), **sintesi pipeline** con rigenerazione di `PIPELINE.md`, e
 le anomalie della run. Scrivi `digests/<YYYY-MM-DD>.md`, rigenera `PIPELINE.md`,
-e **consegna il digest via Gmail** all'utente. Commit + push.
+e **consegna il digest via Gmail** all'utente, poi pubblica:
+`bash scripts/publish_run.sh publish "job-watch: run <run_id> — <sintesi>"`.
 **Ownership di `PIPELINE.md`**: è un artefatto rigenerabile **co-scritto** —
 lo rigenera la routine qui, e lo rigenera anche `application-tracker` su
 richiesta in sessione interattiva (eccezione dichiarata alla regola di
@@ -630,11 +677,11 @@ notifica aggiuntivo, non l'unico: valuta anche una notifica push nativa se
 l'ambiente la espone (osservato funzionante nella run del 2026-07-08).
 **Chiusura del ledger**: appendi a `source-log/runs.jsonl` la riga di end
 (`fase:"end"`, `esito` `ok`/`parziale` + `note` sulle degradazioni) e includila
-nel commit finale. Il digest dichiara la **prossima run attesa** (vedi
+nella pubblicazione finale. Il digest dichiara la **prossima run attesa** (vedi
 contratto): è ciò che rende un silenzio prolungato un segnale misurabile e non
 un dubbio.
 
-### 9. Retention (potatura dello strato operativo — parte del commit finale)
+### 9. Retention (potatura dello strato operativo — parte della pubblicazione finale)
 
 Lo strato operativo è tuo (D5): sei tu a potarlo, a ogni run, con queste soglie
 dichiarate (la "verità" non si perde mai: le candidature vive sono in
@@ -665,7 +712,8 @@ dichiarate (la "verità" non si perde mai: le candidature vive sono in
 Le eliminazioni si fanno con `git rm` nelle forme scoped dell'allowlist
 (`git rm digests/…`, `git rm source-log/…`, `git rm -r staging/…`), mai `rm`:
 tocca solo file tracciati e resta recuperabile dalla storia. Se una potatura
-tocca file, includila nel commit finale della run con il conteggio nel digest
+tocca file, includila nella pubblicazione finale della run (`git rm` mette in
+staging la cancellazione, `publish_run.sh publish` la committa) con il conteggio nel digest
 (sezione anomalie/note: "retention: N voci seen, M file").
 
 ## Note di robustezza
