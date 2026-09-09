@@ -52,7 +52,19 @@ il ledger `source-log/runs.jsonl` dice dove (start senza end).
 ### 2. Offerte nuove valutate
 Raggruppate per intento, ordinate per `score` (forte → debole). Per ognuna:
 `Ruolo @ Azienda` · location · **score** · una riga di sintesi (dai bullet del
-fit) · link alla JD. Se i materiali sono pre-generati (fit forte/buono), segnala
+fit) · link alla JD.
+
+**Modalità e retribuzione, quando presenti** (campi opzionali di `staging.yaml`,
+vedi `references/staging-schema.md`): aggiungili subito dopo la location, così
+si leggono senza aprire la voce — `Data Engineer @ Banca Etica · Milano ·
+ibrido · 39.773 €-43.445 € all'anno · **buono** · …`. Sono **assenti** nella
+maggior parte degli annunci (modalità ~70%, retribuzione ~27%): quando mancano
+si omettono e basta, **senza scrivere "non dichiarata"** — una riga di rumore
+per due terzi delle voci è peggio del silenzio. Se la retribuzione viene dal
+titolo dell'annuncio (`retribuzione.fonte: titolo_annuncio`) marcala come tale
+(es. `RAL da titolo: 45k`): è testo libero del recruiter, non un campo
+verificato. La retribuzione **non** ordina e **non** filtra le voci: l'ordine
+resta quello dello `score`. Se i materiali sono pre-generati (fit forte/buono), segnala
 "📄 materiali pronti in staging" col path `staging/<id>/`. Se non ci sono offerte
 nuove, dillo esplicitamente (non è un errore). Una fusione **cross-run** che ha
 solo aggiunto una fonte a una voce `pending` già esistente (vedi

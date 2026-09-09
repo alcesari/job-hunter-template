@@ -50,6 +50,27 @@ promozione è un rename/spostamento senza rimappare identità.
   Una voce `expired` che l'utente ritiene ancora valida può essere riportata a
   `pending` a mano: `expired` non è irreversibile e non cancella nulla.
 - `company`, `role`, `location`.
+- `modalita_lavoro` — **opzionale**: `in_sede | ibrido | da_remoto`. Assente
+  quando la fonte non lo dichiara, mai indovinato. Oggi lo popola il canale
+  `linkedin_alert` leggendo l'HTML dell'email (~70% delle card).
+- `retribuzione` — **opzionale**, assente quando la fonte non la dichiara
+  (~73% dei casi). Quando c'è:
+  - `testo` — la stringa **verbatim** della fonte (es. `39.773 €-43.445 €
+    all'anno`). È il campo che fa fede.
+  - `fonte` — `campo_strutturato` (la riga retribuzione della card) oppure
+    `titolo_annuncio` (RAL scritta dal recruiter dentro il titolo, es. `Data
+    Engineer [Ral fino a 45k]`). Serve a pesare l'affidabilità: il titolo è
+    testo libero, il campo strutturato no.
+  - `parsed` — best-effort: `valuta`, `periodo` (`anno|mese|ora`), `min`, `max`.
+    Ogni chiave è `null` quando incerta. **Mai inventare un importo**: se il
+    parsing non è sicuro, `testo` resta ed è sufficiente.
+
+  **Uso limitato per contratto**: la retribuzione è informativa. NON filtra
+  offerte e NON entra nello score di fit — è presente in ~27% degli annunci, e
+  filtrarci sopra penalizzerebbe chi semplicemente non la dichiara.
+- `segnali` — **opzionale**, lista di stringhe verbatim dei badge della fonte
+  (`Selezione attiva`, `3 ex studenti`). Segnale soft per la revisione umana,
+  nessun effetto sul funnel.
 - `source: indeed | linkedin_alert | indeed_alert | career_page | manuale` —
   proiezione di `sources[0].fonte` (retro-compatibilità: i consumatori esistenti
   continuano a leggere questo scalare; enum condiviso con `role-fit` e

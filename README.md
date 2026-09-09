@@ -81,7 +81,7 @@ job-hunter/
 ├─ staging/              # pre-processed offers awaiting review (empty)
 ├─ digests/              # generated digests (empty in the template)
 ├─ cv-facts.example.yaml # seed for cv-facts.yaml (truthfulness gate config)
-├─ scripts/              # utilities (run publishing, digest delivery, career pages, truthfulness gate, liveness)
+├─ scripts/              # utilities (run publishing, digest delivery, career pages, LinkedIn alert parsing, truthfulness gate, liveness)
 ├─ docs/                 # runbooks and notes (GDPR deletion, threat model)
 ├─ .claude/skills/       # the system's skills
 └─ CLAUDE.md             # persistent context for the agent
@@ -206,7 +206,7 @@ job-hunter/
 ├─ staging/              # offerte pre-lavorate in attesa di revisione (vuota)
 ├─ digests/              # digest generati (vuota nel template)
 ├─ cv-facts.example.yaml # seed per cv-facts.yaml (config del gate di veridicità)
-├─ scripts/              # utility (pubblicazione run, consegna digest, career page, gate veridicità, liveness)
+├─ scripts/              # utility (pubblicazione run, consegna digest, career page, parsing alert LinkedIn, gate veridicità, liveness)
 ├─ docs/                 # runbook e note (cancellazione GDPR, modello di minaccia)
 ├─ .claude/skills/       # le skill del sistema
 └─ CLAUDE.md             # contesto permanente per l'agente

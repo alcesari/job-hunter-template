@@ -208,9 +208,12 @@ v1 usa i due canali legittimi disponibili oggi (le piattaforme spingono i dati, 
 1. **Indeed via connettore** — ricerca diretta per ruolo × location dell'intento.
 2. **Alert email via Gmail** — LinkedIn (`jobs-noreply@linkedin.com`,
    `jobalerts-noreply@linkedin.com`) e Indeed (`alert@indeed.com`,
-   `noreply@indeed.com`) nella finestra `finestra_temporale_ore`. Alcuni alert
-   LinkedIn contengono più annunci per email e senza descrizione: comportamento
-   noto, gestito qui.
+   `noreply@indeed.com`) nella finestra `finestra_temporale_ore`. Gli alert
+   LinkedIn contengono più annunci per email (6 per digest nei campioni
+   osservati) e **senza job description**: quella sta solo sulla pagina
+   dell'annuncio, che non fetchiamo. Comportamento noto, gestito qui.
+   Il corpo dell'email porta però più campi di quanti se ne leggano nel
+   plaintext: vedi «Arricchimento delle card dall'HTML» sotto.
    **Attribuzione alert → ricerca (via `searches/alerts-registry.yaml`)**:
    il subject di un alert LinkedIn porta il titolo del PRIMO annuncio, NON il
    nome dell'avviso → inutilizzabile per capire da quale ricerca salvata viene
@@ -220,16 +223,25 @@ v1 usa i due canali legittimi disponibili oggi (le piattaforme spingono i dati, 
    canonica `<keywords-slug>:<geoId>`**. Cercala in `alerts-registry.yaml`
    (voci con lo stesso `keywords`+`geoId`) → ne prendi il `ricerca_id` e
    l'`intent_id`. **Regola a due rami**: cerca il link nel `plaintextBody`; se
-   non c'è, estrailo dall'HTML — è l'UNICA eccezione ammessa alla regola
-   "solo plaintext", e vale solo per quel link, non per il parsing degli annunci.
+   non c'è, estrailo dall'HTML.
    ⚠️ **Trappola quoted-printable (verificata 2026-07-14)**: il `plaintextBody`
    del connettore Gmail può fare un doppio-decode QP che **corrompe le prime
    cifre del `geoId`** (`geoId=103350119` → `geoId\x103350119`, cioè il byte di
    controllo È le 2 cifre in hex: `=10`→Italia, `=90`→Milano `90009936`,
-   `=91`→UE `91000000`). Perciò: leggi `keywords` dal plaintext (pulito) ma per
-   il `geoId` o decodifica correttamente, **oppure** fai match tollerante per
-   **suffisso** del geoId + keywords contro il registro (che conserva il geoId
-   COMPLETO e pulito). Chiave non trovata → `ricerca_id =
+   `=91`→UE `91000000`).
+   ⚠️ **La stessa trappola colpisce anche `keywords` (verificata 2026-09-09)**:
+   non è vero, come si è creduto fino a qui, che il plaintext dia sempre
+   `keywords` pulito. Se il VALORE inizia con due caratteri esadecimali, `=` +
+   quei due vengono consumati come escape e il nome del parametro resta
+   attaccato al valore mutilato: `keywords=data+engineer` →
+   `keywords\xdata+engineer` (`=da` mangiato). Un valore che inizia con `%22`
+   (ricerche con virgolette) sopravvive intatto, perché `%2` non è esadecimale
+   valido — ecco perché il difetto sfugge finché si guardano solo gli alert con
+   keyword quotate. Su 5 alert reali, 2 avevano `keywords` corrotto.
+   Conseguenza operativa: **non cercare mai la stringa letterale `keywords=`**
+   né per il match né per il gate; cerca il nome del parametro e fai match
+   tollerante per **suffisso** del geoId + keywords contro il registro (che
+   conserva entrambi COMPLETI e puliti). Chiave non trovata → `ricerca_id =
    <intent>:linkedin_alert:unmatched:<chiave>` e **anomalia nel digest** (alert
    creato fuori dal sistema o keywords cambiate): non attribuire a forza.
    Email che NON sono alert (nessun link con `keywords`+`geoId`, es. "lavori
@@ -257,6 +269,47 @@ v1 usa i due canali legittimi disponibili oggi (le piattaforme spingono i dati, 
    finestra; se il mittente trova mail che l'etichetta no, la query per
    etichetta è malformata (questa trappola) — segnala l'anomalia, non uno zero
    legittimo. Uno zero vero è: mittente E etichetta entrambi a zero.
+
+   **Arricchimento delle card dall'HTML** (dal 2026-09-09). Il `plaintextBody`
+   di un alert dà solo titolo, azienda, località e link. Il **body HTML della
+   stessa email** — che arriva nella medesima chiamata, senza una richiesta di
+   rete in più e senza toccare `linkedin.com` — porta anche la **modalità di
+   lavoro**, la **retribuzione** quando il recruiter ha compilato il campo, e i
+   **badge** ("Selezione attiva", "N ex studenti"). Misurato su 5 alert reali /
+   30 card: modalità 21/30, retribuzione 6/30, badge 16/30; nel plaintext
+   rispettivamente 4, **0** e parziale. La regola "solo plaintext" **non vale
+   più** per gli alert LinkedIn: il plaintext resta la fonte per l'attribuzione,
+   l'HTML è la fonte per i campi della card.
+
+   Il parsing lo fa `python scripts/parse_linkedin_alert.py <file.json>` (stdlib
+   only, exit code non fatali come gli altri script). **Non leggere l'HTML da
+   solo**: `get_thread` con `messageFormat: FULL_CONTENT` restituisce ~190.000
+   caratteri per email, supera il limite del tool result e viene **riversato su
+   file** dall'harness, che ne restituisce il path — è quel path che si passa
+   allo script (`-` legge da stdin, per il caso di una risposta piccola non
+   riversata).
+
+   ⚠️ **Gate obbligatorio, già implementato nello script**: processa una email
+   solo se è davvero un alert, cioè se contiene il link della ricerca salvata
+   col parametro `keywords`. `jobs-noreply@linkedin.com` invia anche email che
+   **non** sono alert ma sono piene di link `/comm/jobs/view/` — "candidati
+   subito per il ruolo X", "offerte simili a Y", "Z sta assumendo" (verificato:
+   una di queste conteneva 5 link annuncio). Senza il gate entrerebbero nel
+   funnel come annunci attribuiti a una ricerca inesistente.
+
+   **Retribuzione — provenienza obbligatoria e uso limitato.** Il campo porta
+   sempre `fonte`: `campo_strutturato` (la riga della card) oppure
+   `titolo_annuncio` (la RAL che il recruiter scrive dentro il titolo, es.
+   `Data Engineer [Ral fino a 45k]` — copertura aggiuntiva ~7%). Il `testo`
+   resta verbatim; il parsing numerico è best-effort e i campi restano `null`
+   quando incerti: **mai inventare un importo**. La retribuzione è **solo
+   informativa** — compare in staging e nel digest, ma NON filtra e NON pesa
+   sullo score di fit. È presente in ~27% degli annunci: filtrarci sopra
+   penalizzerebbe chi semplicemente non la dichiara.
+
+   **Degrado**: script assente, in errore o exit 3 → gli annunci proseguono con
+   i soli campi del plaintext, esattamente come prima di questa aggiunta. Nota
+   nel digest, mai un fallimento della run.
 3. **Career page aziendali** — per ogni azienda in `searches/companies.yaml`
    con `attiva: true`, `access_tier: A|B` e `robots_ok: si` (STRETTO: `no` e
    `da_verificare` sono equivalenti, entrambi NON interrogati — vedi contratto
@@ -313,6 +366,16 @@ Il modulo-fonte è deliberatamente isolato: aggiungere aggregatori legittimi
 scraper terzi, è un cambio confinato a questo passo, che non tocca contratti a
 valle. NON automatizzare azioni su LinkedIn/Indeed dietro login (ToS): le
 offerte entrano solo via connettore o via email che le piattaforme già spingono.
+
+⚠️ **Non basta "non è dietro login" per considerare una fonte lecita**
+(verificato 2026-09-09). La pagina guest di un annuncio LinkedIn
+(`/jobs/view/<id>/`) risponde 200 senza autenticazione e contiene la job
+description completa — ma il `robots.txt` di LinkedIn dichiara
+`User-agent: * → Disallow: /`, cioè vieta l'intero sito a qualunque agente non
+autorizzato, e disallowa esplicitamente `/jobs-guest/` e `/api/jobPostings/jobs*`.
+Il fetch di quelle pagine (il "livello 2" nella discussione di design) resta
+quindi **fuori dal perimetro** finché non è una decisione umana esplicita e
+documentata: raggiungibile ≠ consentito.
 
 ## Flusso della run
 
@@ -562,6 +625,15 @@ score ordinale `forte|buono|parziale|debole`, niente numeri). L'output va in
 `staging/`, non in `role-fit/` (regola di proprietà): sarà la promozione umana a
 persisterlo in `role-fit/`. Le offerte oltre il cap: log `non_lavorato_cap`.
 
+Riporta in `staging.yaml` i campi opzionali che la fonte ha dichiarato —
+`modalita_lavoro`, `retribuzione`, `segnali` (contratto in
+`references/staging-schema.md`) — omettendo quelli assenti. La **retribuzione
+non entra nella valutazione**: non è un bullet pesato, non muove lo score, non
+scarta nulla. È presente in circa un quarto degli annunci e serve alla revisione
+umana, non al giudizio di fit. La modalità di lavoro invece **può** entrare
+nella valutazione, perché tocca un vincolo reale dichiarato nel
+`master-profile` (trasferimento/remoto).
+
 ### 5-bis. Fusione cross-fonte (entity resolution, intra-run e cross-run)
 Sulle offerte sopravvissute, riconosci quelle che sono la STESSA posizione
 vista da fonti diverse — sia nella stessa run (es. Indeed e career_page trovano
@@ -640,6 +712,10 @@ source-log fallisce ma il resto è andato: non bloccare digest/stato, segnala
 l'anomalia nel digest (il log è telemetria, la pipeline è il prodotto).
 Le righe da fonte career_page portano anche `azienda_fonte` (contratto
 source-log). La fusione NON riduce le righe: un annuncio per fonte, sempre.
+Le righe portano anche `modalita_lavoro` e `retribuzione` **quando la fonte li
+dichiara** (oggi `linkedin_alert` via `scripts/parse_linkedin_alert.py`):
+opzionali, omessi quando ignoti, mai indovinati — servono a misurare la
+copertura reale run dopo run in `job-alert-tuner`.
 
 ### 8. Digest (contratto in references/digest-schema.md)
 Componi il digest (vedi contratto): offerte nuove valutate, cosa è in staging in

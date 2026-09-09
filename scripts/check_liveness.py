@@ -29,9 +29,13 @@ un'opportunita' reale; un falso `indeterminato` costa solo una voce in piu' da
 guardare. L'asimmetria e' voluta e va preservata da chiunque tocchi questo file.
 
 PERIMETRO (limite dichiarato, non un bug): sono verificabili solo le fonti con
-URL fetchabile e dominio allowlistato — in pratica `career_page`. LinkedIn e'
-dietro login (vincolo V5) e non e' fetchabile; Indeed va verificato dall'agente
-via connettore (`get_job_details`), non da qui. Quelle voci escono
+URL fetchabile e dominio allowlistato — in pratica `career_page`. LinkedIn NON
+si interroga da qui: attenzione, la ragione non e' tecnica — la pagina guest
+`/jobs/view/<id>/` risponde 200 senza login (verificato 2026-09-09) — ma di
+policy: il robots.txt di LinkedIn dichiara `User-agent: * -> Disallow: /`.
+Raggiungibile non vuol dire consentito, e questo script non aggira robots.txt.
+Indeed va verificato dall'agente via connettore (`get_job_details`), non da
+qui. Quelle voci escono
 `indeterminato` con un motivo esplicito. La copertura e' PARZIALE per costruzione.
 
 SOFT-404 (verificato in taratura, 2026-07-20): alcune career page rispondono
@@ -280,7 +284,8 @@ def main():
             verdetto, motivo = "indeterminato", "nessun URL utilizzabile nella voce"
         elif "linkedin.com" in url:
             verdetto, motivo = ("indeterminato",
-                                "LinkedIn dietro login (V5): non verificabile da script")
+                                "LinkedIn escluso per policy (robots.txt: "
+                                "Disallow /), non per impossibilita' tecnica")
         elif not host_allowed(url, allowed):
             verdetto, motivo = ("indeterminato",
                                 "dominio non in sandbox.network.allowedDomains: non contattato")
